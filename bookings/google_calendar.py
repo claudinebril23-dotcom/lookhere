@@ -22,19 +22,38 @@ except ImportError:
 
 
 def _get_service():
-    """Build and return an authenticated Google Calendar service."""
+    """Build and return an authenticated Google Calendar service.
+    
+    Supports two ways to provide credentials:
+    1. GOOGLE_CREDENTIALS_JSON env var — full JSON string (used on Railway)
+    2. google_credentials.json file on disk (used locally)
+    """
     if not GOOGLE_PACKAGES_AVAILABLE:
         print("Google Calendar: ❌ Required packages not installed")
         print("   Run: pip install google-auth google-auth-oauthlib google-auth-httplib2 google-api-python-client")
         return None
-    
+
+    import os, json
+
     try:
-        credentials = service_account.Credentials.from_service_account_file(
-            str(settings.GOOGLE_CALENDAR_CREDENTIALS),
-            scopes=['https://www.googleapis.com/auth/calendar'],
-        )
+        # Option 1: credentials from environment variable (Railway)
+        creds_json = os.environ.get('GOOGLE_CREDENTIALS_JSON', '')
+        if creds_json:
+            info = json.loads(creds_json)
+            credentials = service_account.Credentials.from_service_account_info(
+                info,
+                scopes=['https://www.googleapis.com/auth/calendar'],
+            )
+        else:
+            # Option 2: credentials from file (local development)
+            credentials = service_account.Credentials.from_service_account_file(
+                str(settings.GOOGLE_CALENDAR_CREDENTIALS),
+                scopes=['https://www.googleapis.com/auth/calendar'],
+            )
+
         service = build('calendar', 'v3', credentials=credentials, cache_discovery=False)
         return service
+
     except FileNotFoundError:
         print(f"Google Calendar: ❌ Credentials file not found: {settings.GOOGLE_CALENDAR_CREDENTIALS}")
         logger.error(f"Google Calendar: credentials file not found — {settings.GOOGLE_CALENDAR_CREDENTIALS}")
