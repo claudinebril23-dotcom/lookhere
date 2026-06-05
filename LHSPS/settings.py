@@ -67,11 +67,26 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'LHSPS.wsgi.application'
 
-# Database — auto-selects PostgreSQL (local) or MySQL (PythonAnywhere)
-# Set DATABASE_ENGINE=mysql in the PythonAnywhere .env to switch engines.
+# Database — supports DATABASE_URL (Railway), individual DB_* vars, or MySQL
+# Priority: DATABASE_URL > individual DB_* vars > defaults
 _db_engine = os.environ.get('DATABASE_ENGINE', 'postgresql')
+_database_url = os.environ.get('DATABASE_URL', '')
 
-if _db_engine == 'mysql':
+if _database_url:
+    # Railway / any provider that gives a DATABASE_URL
+    import urllib.parse
+    _url = urllib.parse.urlparse(_database_url)
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': _url.path.lstrip('/'),
+            'USER': _url.username,
+            'PASSWORD': _url.password,
+            'HOST': _url.hostname,
+            'PORT': str(_url.port or 5432),
+        }
+    }
+elif _db_engine == 'mysql':
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.mysql',
