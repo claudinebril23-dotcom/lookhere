@@ -1,0 +1,1448 @@
+{% extends "admin/change_form.html" %}
+{% load static %}
+
+{% block extrahead %}
+{{ block.super }}
+<style>
+  /* Immediately hide reference code before page loads */
+  #content h1,
+  #content-main h1,
+  .object-tools,
+  .breadcrumbs {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+  }
+
+  /* Additional aggressive hiding for reference code */
+  #content > h1,
+  #content-main > h1,
+  .content > h1,
+  h1:contains('LOOKHERE'),
+  h1[class*='title'] {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    position: absolute !important;
+    left: -9999px !important;
+    top: -9999px !important;
+    width: 0 !important;
+    height: 0 !important;
+    overflow: hidden !important;
+  }
+
+  /* Hide any element containing LOOKHERE text */
+  *:not(script):not(style) {
+    &:has-text('LOOKHERE') {
+      display: none !important;
+    }
+  }
+
+  /* Hide Django default message banner */
+  .messagelist,
+  .messages,
+  ul.messagelist,
+  div.messagelist {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    position: absolute !important;
+    left: -9999px !important;
+    top: -9999px !important;
+    z-index: -9999 !important;
+    pointer-events: none !important;
+  }
+  
+  /* Keep messages in DOM but hidden - for base_site.html to read */
+  .messagelist li,
+  .messages li,
+  ul.messagelist li,
+  div.messagelist li {
+    display: none !important;
+    visibility: hidden !important;
+  }
+  
+  /* Toast notification animation */
+  @keyframes slideInRight {
+    from {
+      transform: translateX(400px);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block breadcrumbs %}
+{# Completely override breadcrumbs - render nothing #}
+{% endblock %}
+
+{% block content_title %}
+{# Override content title to prevent reference code display - render nothing #}
+{% endblock %}
+
+{% block pretitle %}
+{# Override pretitle #}
+{% endblock %}
+
+{% block object-tools %}
+{# Remove history button #}
+{% endblock %}
+
+{% block object-tools-items %}
+{# Remove history button items #}
+{% endblock %}
+
+
+
+{% block extrastyle %}
+{{ block.super }}
+<style>
+  /* ═══════════════════════════════════════════════════════════
+     MODERN BOOKING FORM - Complete UI Redesign
+     ═══════════════════════════════════════════════════════════ */
+
+  /* ── Base Layout ── */
+  #content-main {
+    max-width: 960px;
+    margin: 0 auto !important;
+    padding: 0;
+    float: none !important;
+    padding-top: 0 !important;
+    overflow: hidden;
+  }
+
+  /* Aggressively hide the top area where reference code appears */
+  #content {
+    padding-top: 0 !important;
+    margin-top: 0 !important;
+  }
+
+  #content > * {
+    margin-top: 0 !important;
+  }
+
+  /* ── Section Cards ── */
+  .module {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 0;
+    margin-bottom: 28px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+    overflow: hidden;
+  }
+
+  .module:last-of-type {
+    margin-bottom: 0;
+  }
+
+  /* ── Section Headers ── */
+  .module h2 {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #ffffff;
+    padding: 16px 24px;
+    margin: 0;
+    font-size: 15px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .module h2::before {
+    display: none;
+  }
+
+  /* Section-specific header colors */
+  .module:first-of-type h2 {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  }
+
+  .module:nth-of-type(2) h2 {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  }
+
+  .module:nth-of-type(3) h2 {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  }
+
+  .module .description {
+    display: none;
+  }
+
+  /* ── Form Rows ── */
+  .form-row {
+    padding: 14px 24px !important;
+    border-bottom: 1px solid #f1f5f9 !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 16px !important;
+    min-height: 56px !important;
+    box-sizing: border-box !important;
+    background: transparent !important;
+    transition: background-color 0.15s ease !important;
+  }
+
+  .form-row:hover {
+    background: #f8fafc !important;
+  }
+
+  .form-row:last-child {
+    border-bottom: none !important;
+  }
+
+  /* ── Labels ── */
+  .form-row label,
+  .form-row > label:first-child {
+    font-weight: 600;
+    color: #475569;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    min-width: 130px;
+    max-width: 130px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    line-height: 1.4;
+    padding-top: 0;
+    margin: 0;
+  }
+
+  .required label::after {
+    content: '*';
+    color: #ef4444;
+    font-weight: 700;
+    margin-left: 2px;
+    font-size: 14px;
+  }
+
+  /* ── Field Containers ── */
+  .form-row > div:not(.help):not(.errorlist),
+  .form-row > p,
+  .form-row > .field-box {
+    flex: 1 !important;
+    min-width: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 4px !important;
+    background: transparent !important;
+    border: none !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    align-items: flex-start !important;
+  }
+
+  /* ── Input Fields ── */
+  .form-row input[type="text"],
+  .form-row input[type="email"],
+  .form-row input[type="tel"],
+  .form-row input[type="number"],
+  .form-row input[type="date"],
+  .form-row input[type="time"],
+  .form-row textarea {
+    width: 100% !important;
+    height: 42px !important;
+    padding: 0 14px !important;
+    border: 1.5px solid #e2e8f0 !important;
+    border-radius: 10px !important;
+    font-size: 14px !important;
+    color: #1e293b !important;
+    background: #ffffff !important;
+    transition: all 0.2s ease !important;
+    font-family: inherit !important;
+    box-sizing: border-box !important;
+    line-height: 42px !important;
+    box-shadow: none !important;
+  }
+
+  .form-row input[type="text"]:hover,
+  .form-row input[type="email"]:hover,
+  .form-row input[type="tel"]:hover,
+  .form-row input[type="number"]:hover,
+  .form-row input[type="date"]:hover,
+  .form-row input[type="time"]:hover,
+  .form-row textarea:hover {
+    border-color: #cbd5e1 !important;
+  }
+
+  .form-row input[type="text"]:focus,
+  .form-row input[type="email"]:focus,
+  .form-row input[type="tel"]:focus,
+  .form-row input[type="number"]:focus,
+  .form-row input[type="date"]:focus,
+  .form-row input[type="time"]:focus,
+  .form-row textarea:focus {
+    outline: none;
+    border-color: #667eea !important;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.12) !important;
+    background-color: #fafbff !important;
+  }
+
+  .form-row textarea {
+    height: auto !important;
+    min-height: 80px !important;
+    padding: 10px 14px !important;
+    line-height: 1.5 !important;
+    resize: vertical !important;
+  }
+
+  /* ── Readonly / Disabled Fields ── */
+  .form-row input[readonly],
+  .form-row select[disabled],
+  .form-row input[disabled] {
+    background: #f8fafc !important;
+    color: #64748b !important;
+    cursor: not-allowed !important;
+    border-color: #e2e8f0 !important;
+    opacity: 0.8;
+  }
+
+  /* ── Select / Dropdown ── */
+  .form-row select {
+    width: 100% !important;
+    height: 42px !important;
+    min-height: 42px !important;
+    padding: 0 36px 0 14px !important;
+    border: 1.5px solid #e2e8f0 !important;
+    border-radius: 10px !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    color: #1e293b !important;
+    background-color: #ffffff !important;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E") !important;
+    background-repeat: no-repeat !important;
+    background-position: right 12px center !important;
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+    appearance: none !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+    font-family: inherit !important;
+    box-sizing: border-box !important;
+    line-height: 42px !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    box-shadow: none !important;
+    margin: 0 !important;
+  }
+
+  .form-row select:hover {
+    border-color: #cbd5e1 !important;
+  }
+
+  .form-row select:focus {
+    outline: none;
+    border-color: #667eea !important;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.12) !important;
+    background-color: #fafbff !important;
+  }
+
+  .form-row select option {
+    padding: 10px 14px;
+    font-size: 14px;
+    color: #1e293b;
+    background: #ffffff;
+  }
+
+  /* ── Related Widget Wrapper (select + buttons) ── */
+  .related-widget-wrapper,
+  .form-row .related-widget-wrapper {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    width: 100% !important;
+    flex-wrap: nowrap !important;
+    background: transparent !important;
+    border: none !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+  }
+
+  .related-widget-wrapper select,
+  .form-row .related-widget-wrapper select {
+    flex: 1 !important;
+    min-width: 0 !important;
+    width: auto !important;
+  }
+
+  /* ── Icon Buttons (add/edit next to selects) ── */
+  .related-widget-wrapper a,
+  .related-widget-wrapper .related-widget-wrapper-link,
+  .form-row .related-widget-wrapper a {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 38px !important;
+    height: 42px !important;
+    min-width: 38px !important;
+    min-height: 42px !important;
+    padding: 0 !important;
+    background: #f1f5f9 !important;
+    border: 1.5px solid #e2e8f0 !important;
+    border-radius: 10px !important;
+    color: #64748b !important;
+    font-size: 15px !important;
+    line-height: 1 !important;
+    text-decoration: none !important;
+    transition: all 0.2s ease !important;
+    box-sizing: border-box !important;
+    flex-shrink: 0 !important;
+    cursor: pointer !important;
+  }
+
+  .related-widget-wrapper a:hover,
+  .form-row .related-widget-wrapper a:hover {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    border-color: transparent !important;
+    color: #ffffff !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3) !important;
+    text-decoration: none !important;
+  }
+
+  .related-widget-wrapper a:active,
+  .form-row .related-widget-wrapper a:active {
+    transform: translateY(0) !important;
+    box-shadow: none !important;
+  }
+
+  /* ── Help Text ── */
+  .form-row .help,
+  .form-row p.help {
+    color: #64748b;
+    font-size: 12px;
+    margin: 2px 0 0 0;
+    line-height: 1.5;
+  }
+
+  /* ── Error Styling ── */
+  .form-row .errorlist {
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 8px;
+    padding: 8px 12px;
+    margin: 4px 0 0 0;
+    list-style: none;
+    font-size: 13px;
+  }
+
+  .form-row .errorlist li {
+    color: #dc2626;
+    font-weight: 500;
+  }
+
+  .form-row.errors input,
+  .form-row.errors select,
+  .form-row.errors textarea {
+    border-color: #ef4444 !important;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.10) !important;
+  }
+
+  /* ── Many-to-Many Selector (Add-ons) ── */
+  .form-row .selector {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+  }
+
+  .form-row .selector .selector-available,
+  .form-row .selector .selector-chosen {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .form-row .selector h2 {
+    background: #f8fafc !important;
+    color: #475569 !important;
+    padding: 10px 14px !important;
+    font-size: 11px !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.06em !important;
+    border-radius: 10px 10px 0 0 !important;
+    margin: 0 !important;
+    border-bottom: 1px solid #e2e8f0 !important;
+    display: flex !important;
+    gap: 0 !important;
+  }
+
+  .form-row .selector select {
+    width: 100% !important;
+    min-height: 140px !important;
+    height: 140px !important;
+    padding: 8px 10px !important;
+    border: 1.5px solid #e2e8f0 !important;
+    border-radius: 0 0 10px 10px !important;
+    font-size: 13px !important;
+    background: #ffffff !important;
+    appearance: auto !important;
+    -webkit-appearance: auto !important;
+  }
+
+  .form-row .selector select option {
+    padding: 6px 8px !important;
+    border-radius: 4px !important;
+    margin: 1px 0 !important;
+  }
+
+  .form-row .selector select option:checked {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    color: #ffffff !important;
+    font-weight: 600 !important;
+  }
+
+  .form-row .selector .selector-filter {
+    padding: 8px 10px !important;
+    background: #f8fafc !important;
+    border-bottom: 1px solid #e2e8f0 !important;
+  }
+
+  .form-row .selector .selector-filter input {
+    width: 100% !important;
+    padding: 7px 12px !important;
+    border: 1.5px solid #e2e8f0 !important;
+    border-radius: 8px !important;
+    font-size: 13px !important;
+    background: #ffffff !important;
+  }
+
+  .form-row .selector .selector-filter input:focus {
+    border-color: #667eea !important;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.12);
+  }
+
+  .form-row .selector .selector-chooser {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 8px;
+    padding: 0 !important;
+    align-self: center !important;
+  }
+
+  .form-row .selector .selector-chooser a {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 36px !important;
+    height: 36px !important;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    color: #ffffff !important;
+    border-radius: 10px !important;
+    text-decoration: none !important;
+    font-size: 15px !important;
+    transition: all 0.2s ease !important;
+    box-shadow: 0 2px 6px rgba(102, 126, 234, 0.3) !important;
+  }
+
+  .form-row .selector .selector-chooser a:hover {
+    transform: scale(1.08) !important;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4) !important;
+  }
+
+  .form-row .selector .selector-chooser a:active {
+    transform: scale(0.95) !important;
+  }
+
+  /* ── Checkbox Add-ons Styling ── */
+  .form-row ul {
+    list-style: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 10px !important;
+  }
+
+  .form-row ul li {
+    display: flex !important;
+    align-items: center !important;
+    padding: 12px 16px !important;
+    background: #f8fafc !important;
+    border: 1.5px solid #e2e8f0 !important;
+    border-radius: 10px !important;
+    transition: all 0.2s ease !important;
+    cursor: pointer !important;
+  }
+
+  .form-row ul li:hover {
+    background: #f1f5f9 !important;
+    border-color: #cbd5e1 !important;
+  }
+
+  .form-row ul li label {
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+    cursor: pointer !important;
+    width: 100% !important;
+    min-width: auto !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    color: #1e293b !important;
+    text-transform: none !important;
+    letter-spacing: normal !important;
+  }
+
+  .form-row ul li input[type="checkbox"] {
+    width: 20px !important;
+    height: 20px !important;
+    min-width: 20px !important;
+    min-height: 20px !important;
+    margin: 0 !important;
+    cursor: pointer !important;
+    accent-color: #667eea !important;
+    flex-shrink: 0 !important;
+  }
+
+  .form-row ul li:has(input[type="checkbox"]:checked) {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%) !important;
+    border-color: #667eea !important;
+  }
+
+  .form-row ul li:has(input[type="checkbox"]:checked) label {
+    color: #667eea !important;
+    font-weight: 600 !important;
+  }
+
+
+  /* ── Add-ons dropdown (styled like package select) ── */
+  .form-row select.addons-select,
+  .form-row select[multiple].addons-select {
+    width: 100% !important;
+    height: 42px !important;
+    min-height: 42px !important;
+    max-height: 42px !important;
+    padding: 0 36px 0 14px !important;
+    border: 1.5px solid #e2e8f0 !important;
+    border-radius: 10px !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    color: #1e293b !important;
+    background-color: #ffffff !important;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E") !important;
+    background-repeat: no-repeat !important;
+    background-position: right 12px center !important;
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+    appearance: none !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+    font-family: inherit !important;
+    box-sizing: border-box !important;
+    line-height: 42px !important;
+    overflow: hidden !important;
+    box-shadow: none !important;
+    margin: 0 !important;
+  }
+
+  .form-row select.addons-select:hover,
+  .form-row select[multiple].addons-select:hover {
+    border-color: #cbd5e1 !important;
+  }
+
+  .form-row select.addons-select:focus,
+  .form-row select[multiple].addons-select:focus {
+    outline: none;
+    border-color: #667eea !important;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.12) !important;
+    background-color: #fafbff !important;
+  }
+
+  .form-row select.addons-select option,
+  .form-row select[multiple].addons-select option {
+    padding: 10px 14px;
+    font-size: 14px;
+    color: #1e293b;
+    background: #ffffff;
+  }
+
+  .form-row select.addons-select option:checked,
+  .form-row select[multiple].addons-select option:checked {
+    background: #667eea !important;
+    color: #ffffff !important;
+    font-weight: 600 !important;
+  }
+
+  /* ── Submit Row ── */
+  .submit-row {
+    background: #f8fafc;
+    border-top: 2px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 20px 24px;
+    display: block !important;
+    position: sticky;
+    bottom: 0;
+    z-index: 100;
+    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.04);
+    margin-top: 24px;
+    min-height: 64px;
+  }
+
+  .submit-row input[type="submit"],
+  .submit-row button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 0 28px;
+    height: 44px;
+    min-height: 44px;
+    line-height: 1;
+    border: none;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    box-sizing: border-box;
+    vertical-align: middle;
+    overflow: visible;
+    flex-shrink: 0;
+    font-family: inherit;
+    width: auto !important;
+    margin-right: 12px !important;
+    float: left;
+  }
+
+  .submit-row input[type="submit"].default,
+  .submit-row button.default {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #ffffff;
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+  }
+
+  .submit-row input[type="submit"].default:hover,
+  .submit-row button.default:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+  }
+
+  .submit-row input[type="submit"]:not(.default),
+  .submit-row button:not(.default) {
+    background: #ffffff;
+    color: #475569;
+    border: 2px solid #e2e8f0;
+  }
+
+  .submit-row input[type="submit"]:not(.default):hover,
+  .submit-row button:not(.default):hover {
+    background: #f8fafc;
+    border-color: #667eea;
+    color: #667eea;
+    transform: translateY(-1px);
+  }
+
+  .submit-row input[type="submit"]:active,
+  .submit-row button:active {
+    transform: translateY(0);
+  }
+
+  .submit-row .deletelink-box {
+    float: right !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .submit-row .deletelink {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 0 22px !important;
+    height: 44px !important;
+    min-height: 44px;
+    line-height: 1;
+    background: #fef2f2;
+    color: #dc2626;
+    border: 2px solid #fecaca;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    white-space: nowrap;
+    box-sizing: border-box;
+    vertical-align: middle;
+    overflow: visible;
+    flex-shrink: 0;
+    transition: all 0.2s ease;
+    font-family: inherit;
+    width: auto !important;
+    max-width: fit-content !important;
+    margin: 0 !important;
+    float: none !important;
+  }
+
+  .submit-row .deletelink:hover {
+    background: #fee2e2;
+    border-color: #ef4444;
+    color: #b91c1c;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
+    text-decoration: none;
+  }
+
+  .submit-row .deletelink:active {
+    transform: translateY(0);
+  }
+
+  .submit-row::after {
+    content: '';
+    display: table;
+    clear: both;
+  }
+
+  /* ── Inline Forms ── */
+  .inline-group {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 0;
+    margin-bottom: 24px;
+    overflow: hidden;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  }
+
+  .inline-group .tabular {
+    border: none;
+  }
+
+  .inline-group h2 {
+    background: linear-gradient(135deg, #34d399 0%, #059669 100%);
+    color: #ffffff;
+    padding: 16px 24px;
+    margin: 0;
+    font-size: 15px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  /* ── Calendar Widget ── */
+  .calendarbox,
+  .clockbox {
+    background: #ffffff;
+    border: 2px solid #e2e8f0;
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+    overflow: hidden;
+  }
+
+  .calendar caption,
+  .calendarbox h2 {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #ffffff;
+    border-radius: 0;
+    padding: 14px 16px;
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  .calendar td a {
+    color: #667eea;
+    font-weight: 500;
+  }
+
+  .calendar td a:hover {
+    background: #667eea;
+    color: #ffffff;
+    border-radius: 6px;
+  }
+
+  /* ── Dark Mode Support ── */
+  [data-theme="dark"] .module {
+    background: #1e293b;
+    border-color: #334155;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+  }
+
+  [data-theme="dark"] .module h2 {
+    color: #f1f5f9;
+  }
+
+  [data-theme="dark"] .form-row {
+    border-bottom-color: #334155 !important;
+  }
+
+  [data-theme="dark"] .form-row:hover {
+    background: rgba(255, 255, 255, 0.02) !important;
+  }
+
+  [data-theme="dark"] .form-row label,
+  [data-theme="dark"] .form-row > label:first-child {
+    color: #94a3b8;
+  }
+
+  [data-theme="dark"] .form-row input[type="text"],
+  [data-theme="dark"] .form-row input[type="email"],
+  [data-theme="dark"] .form-row input[type="tel"],
+  [data-theme="dark"] .form-row input[type="number"],
+  [data-theme="dark"] .form-row input[type="date"],
+  [data-theme="dark"] .form-row input[type="time"],
+  [data-theme="dark"] .form-row textarea {
+    background: #0f172a !important;
+    border-color: #334155 !important;
+    color: #e2e8f0 !important;
+  }
+
+  [data-theme="dark"] .form-row select,
+  [data-theme="dark"] .related-widget-wrapper select,
+  [data-theme="dark"] .form-row .related-widget-wrapper select {
+    background-color: #0f172a !important;
+    border-color: #334155 !important;
+    color: #e2e8f0 !important;
+  }
+
+  [data-theme="dark"] .form-row input[readonly],
+  [data-theme="dark"] .form-row select[disabled],
+  [data-theme="dark"] .form-row input[disabled] {
+    background: rgba(255, 255, 255, 0.04) !important;
+    color: #64748b !important;
+    border-color: #334155 !important;
+  }
+
+  [data-theme="dark"] .related-widget-wrapper a,
+  [data-theme="dark"] .form-row .related-widget-wrapper a {
+    background: #334155 !important;
+    border-color: #475569 !important;
+    color: #94a3b8 !important;
+  }
+
+  [data-theme="dark"] .related-widget-wrapper a:hover,
+  [data-theme="dark"] .form-row .related-widget-wrapper a:hover {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    border-color: transparent !important;
+    color: #ffffff !important;
+  }
+
+  [data-theme="dark"] .submit-row {
+    background: #1e293b;
+    border-top-color: #334155;
+  }
+
+  [data-theme="dark"] .submit-row input[type="submit"]:not(.default),
+  [data-theme="dark"] .submit-row button:not(.default) {
+    background: #334155;
+    color: #e2e8f0;
+    border-color: #475569;
+  }
+
+  [data-theme="dark"] .submit-row input[type="submit"]:not(.default):hover,
+  [data-theme="dark"] .submit-row button:not(.default):hover {
+    background: #334155;
+    border-color: #667eea;
+    color: #818cf8;
+  }
+
+  [data-theme="dark"] .submit-row .deletelink {
+    background: rgba(239, 68, 68, 0.15) !important;
+    color: #fca5a5 !important;
+    border-color: rgba(239, 68, 68, 0.3) !important;
+  }
+
+  [data-theme="dark"] .submit-row .deletelink:hover {
+    background: rgba(239, 68, 68, 0.25) !important;
+    color: #ffffff !important;
+    border-color: #ef4444 !important;
+  }
+
+  [data-theme="dark"] .inline-group {
+    background: #1e293b;
+    border-color: #334155;
+  }
+
+  [data-theme="dark"] .inline-group h2 {
+    background: linear-gradient(135deg, #34d399 0%, #059669 100%);
+  }
+
+  [data-theme="dark"] .form-row .selector .selector-available,
+  [data-theme="dark"] .form-row .selector .selector-chosen {
+    background: #0f172a;
+    border-color: #334155;
+  }
+
+  [data-theme="dark"] .form-row .selector h2 {
+    background: #334155 !important;
+    color: #94a3b8 !important;
+    border-bottom-color: #475569 !important;
+  }
+
+  [data-theme="dark"] .form-row .selector select {
+    background: #0f172a !important;
+    color: #e2e8f0 !important;
+  }
+
+  [data-theme="dark"] .form-row .selector .selector-filter {
+    background: #334155 !important;
+    border-bottom-color: #475569 !important;
+  }
+
+  [data-theme="dark"] .form-row .selector .selector-filter input {
+    background: #0f172a !important;
+    border-color: #475569 !important;
+    color: #e2e8f0 !important;
+  }
+
+  /* ── Responsive Design ── */
+  @media (max-width: 768px) {
+    #content-main {
+      max-width: 100%;
+      padding: 0 12px;
+    }
+
+    .module {
+      border-radius: 12px;
+      margin-bottom: 20px;
+    }
+
+    .module h2 {
+      padding: 14px 16px;
+      font-size: 13px;
+    }
+
+    .form-row {
+      padding: 12px 16px !important;
+      flex-direction: column !important;
+      align-items: flex-start !important;
+      gap: 8px !important;
+      min-height: auto !important;
+    }
+
+    .form-row label,
+    .form-row > label:first-child {
+      min-width: auto !important;
+      max-width: 100% !important;
+      width: 100% !important;
+      font-size: 11px;
+    }
+
+    .form-row > div:not(.help):not(.errorlist),
+    .form-row > p,
+    .form-row > .field-box {
+      width: 100% !important;
+    }
+
+    .related-widget-wrapper,
+    .form-row .related-widget-wrapper {
+      flex-wrap: wrap !important;
+      gap: 6px !important;
+    }
+
+    .related-widget-wrapper select,
+    .form-row .related-widget-wrapper select {
+      min-width: 0 !important;
+      width: 100% !important;
+    }
+
+    .related-widget-wrapper a,
+    .form-row .related-widget-wrapper a {
+      width: 36px !important;
+      height: 36px !important;
+      min-width: 36px !important;
+      min-height: 36px !important;
+    }
+
+    .form-row .selector {
+      flex-direction: column !important;
+      gap: 12px !important;
+    }
+
+    .form-row .selector .selector-available,
+    .form-row .selector .selector-chosen {
+      width: 100% !important;
+    }
+
+    .form-row .selector .selector-chooser {
+      flex-direction: row !important;
+      align-self: center !important;
+    }
+
+    .submit-row {
+      flex-direction: column !important;
+      align-items: stretch !important;
+      gap: 10px !important;
+      padding: 16px !important;
+      border-radius: 12px;
+    }
+
+    .submit-row input[type="submit"],
+    .submit-row button,
+    .submit-row .deletelink {
+      width: 100% !important;
+      justify-content: center !important;
+    }
+
+    .submit-row .deletelink-box {
+      margin-left: 0 !important;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .module h2 {
+      padding: 12px 14px;
+      font-size: 12px;
+      letter-spacing: 0.03em;
+    }
+
+    .form-row {
+      padding: 10px 14px !important;
+    }
+
+    .form-row select,
+    .related-widget-wrapper select,
+    .form-row .related-widget-wrapper select {
+      font-size: 13px !important;
+    }
+
+    .form-row input[type="text"],
+    .form-row input[type="email"],
+    .form-row input[type="tel"],
+    .form-row input[type="number"],
+    .form-row input[type="date"],
+    .form-row input[type="time"],
+    .form-row textarea {
+      font-size: 13px !important;
+      height: 40px !important;
+    }
+  }
+
+  /* ── Page Header ── */
+  /* Hide h1 titles that contain reference codes */
+  #content h1,
+  #content-main h1,
+  .breadcrumbs {
+    display: none !important;
+  }
+
+  /* Hide object-tools completely */
+  .object-tools {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    position: absolute !important;
+    left: -9999px !important;
+  }
+
+  /* Hide any text that might be the reference code */
+  #content > h1:first-child,
+  #content-main > h1:first-child {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    position: absolute !important;
+    left: -9999px !important;
+  }
+
+  /* Explicitly show form and content */
+  #content > form,
+  #content-main,
+  #content .form-row,
+  #content .module,
+  #content .submit-row {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+
+  /* ── Booking Title & Subtitle ── */
+  .booking-header {
+    display: none;
+  }
+
+  /* ── Breadcrumbs ── */
+  .breadcrumbs {
+    background: #f8fafc;
+    padding: 12px 20px;
+    border-radius: 10px;
+    margin-bottom: 16px;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  [data-theme="dark"] .breadcrumbs {
+    background: #1e293b;
+    color: #94a3b8;
+  }
+
+  /* ── Object Tools ── */
+  .object-tools {
+    display: none !important;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+{{ block.super }}
+{% endblock %}
+
+{% block field_sets %}
+{# Add custom header with booking title #}
+<div class="booking-header">
+  {% if original %}
+  <div class="main-title">Booking Details</div>
+  {% endif %}
+</div>
+{% for fieldset in adminform %}
+{% include "admin/includes/fieldset.html" %}
+{% endfor %}
+{% endblock %}
+
+{% block after_field_sets %}
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // ========== CLEAR REFERENCE ELEMENTS ==========
+    (function() {
+      function removeReferenceElements() {
+        // Remove all h1 elements
+        document.querySelectorAll('h1').forEach(el => {
+          if (el.textContent.includes('LOOKHERE') || el.textContent.includes('Administrator')) {
+            el.remove();
+          }
+        });
+        
+        // Remove object-tools
+        document.querySelectorAll('.object-tools').forEach(el => el.remove());
+        
+        // Remove all h1 in content areas
+        document.querySelectorAll('#content h1, #content-main h1, .content h1, main h1').forEach(el => el.remove());
+        
+        // Remove breadcrumbs
+        document.querySelectorAll('.breadcrumbs').forEach(el => el.remove());
+        
+        // Remove Django messages
+        document.querySelectorAll('.messagelist, .messages, ul.messagelist, div.messagelist').forEach(el => el.remove());
+        
+        // Find and remove any text node containing LOOKHERE or Administrator
+        const walker = document.createTreeWalker(
+          document.getElementById('content') || document.body,
+          NodeFilter.SHOW_TEXT,
+          null,
+          false
+        );
+        
+        const nodesToRemove = [];
+        while (walker.nextNode()) {
+          const node = walker.currentNode;
+          if (node.textContent.includes('LOOKHERE') || node.textContent.includes('Administrator')) {
+            const parent = node.parentElement;
+            if (parent && parent.tagName !== 'SCRIPT' && parent.tagName !== 'STYLE') {
+              nodesToRemove.push(parent);
+            }
+          }
+        }
+        
+        nodesToRemove.forEach(el => {
+          if (el && !el.querySelector('form') && !el.querySelector('.module')) {
+            el.remove();
+          }
+        });
+      }
+      
+      removeReferenceElements();
+      setTimeout(removeReferenceElements, 10);
+      setTimeout(removeReferenceElements, 50);
+      setTimeout(removeReferenceElements, 100);
+      setTimeout(removeReferenceElements, 200);
+      setTimeout(removeReferenceElements, 500);
+      setTimeout(removeReferenceElements, 1000);
+    })();
+    
+    const form = document.querySelector('form');
+    
+    // ========== FORM VALIDATION - Clear errors when fields are corrected ==========
+    if (form) {
+      const fields = form.querySelectorAll('input:not([type="hidden"]), select, textarea');
+      
+      // Clear errors on field interaction
+      fields.forEach(field => {
+        ['input', 'change', 'blur'].forEach(event => {
+          field.addEventListener(event, function() {
+            clearFieldError(this);
+          });
+        });
+      });
+      
+      function clearFieldError(field) {
+        const formRow = field.closest('.form-row');
+        if (!formRow) return;
+        
+        // Remove error class and errorlist
+        formRow.classList.remove('errors');
+        const errorList = formRow.querySelector('.errorlist');
+        if (errorList) errorList.remove();
+        
+        // Reset field styling
+        field.style.borderColor = '';
+        field.style.boxShadow = '';
+      }
+      
+      // Clear all errors on form submit (they'll reappear if validation fails server-side)
+      form.addEventListener('submit', function() {
+        setTimeout(() => {
+          fields.forEach(field => {
+            if (field.value && field.value.trim() !== '') {
+              clearFieldError(field);
+            }
+          });
+        }, 50);
+      });
+    }
+    
+    // ========== SAVE BUTTON HANDLERS ==========
+    const saveButtons = document.querySelectorAll('input[type="submit"][name="_save"], input[type="submit"][name="_continue"], input[type="submit"][name="_addanother"]');
+    
+    saveButtons.forEach(btn => {
+      btn.addEventListener('click', function(e) {
+        // Clear previous save flags
+        sessionStorage.removeItem('adminSaveAction');
+        sessionStorage.removeItem('adminSaveModel');
+        sessionStorage.removeItem('adminSaveError');
+        
+        const form = this.closest('form');
+        if (!form) return;
+        
+        // Check HTML5 validation
+        if (form.checkValidity && !form.checkValidity()) {
+          console.log('HTML5 validation failed');
+          return;
+        }
+        
+        // Check required fields
+        const requiredFields = form.querySelectorAll('.required input:not([type="hidden"]):not([type="submit"]), .required select, .required textarea');
+        let allValid = true;
+        let firstInvalidField = null;
+        
+        requiredFields.forEach(field => {
+          if (field.disabled) return;
+          if (!field.value || field.value.trim() === '') {
+            allValid = false;
+            if (!firstInvalidField) firstInvalidField = field;
+            field.style.borderColor = '#ef4444';
+            field.style.boxShadow = '0 0 0 3px rgba(239, 68, 68, 0.12)';
+          }
+        });
+        
+        if (!allValid) {
+          console.log('Required field validation failed');
+          if (firstInvalidField) {
+            firstInvalidField.focus();
+            firstInvalidField.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }
+          return;
+        }
+        
+        // All validations passed - set save flags
+        sessionStorage.setItem('adminSaveAction', 'true');
+        sessionStorage.setItem('adminSaveModel', 'Booking');
+        console.log('Save flags set, form will submit');
+      });
+    });
+    
+    // ========== SHOW SUCCESS NOTIFICATION ON PAGE LOAD (if saved) ==========
+    // Check if we were redirected here after a successful save
+    if (sessionStorage.getItem('adminSaveAction') === 'true') {
+      // Show success notification
+      showNotification('Booking saved successfully!', 'success');
+      // Clear the flag so it doesn't show again on refresh
+      sessionStorage.removeItem('adminSaveAction');
+      sessionStorage.removeItem('adminSaveModel');
+    }
+    
+    // Check if there are form errors (Django re-rendered with errors)
+    const hasErrors = document.querySelector('.errorlist') !== null;
+    if (hasErrors) {
+      showNotification('Please correct the errors below.', 'error');
+    }
+    
+    function showNotification(message, type) {
+      // Remove any existing notification
+      const existing = document.querySelector('.custom-notification');
+      if (existing) existing.remove();
+      
+      const notification = document.createElement('div');
+      notification.className = `custom-notification ${type}`;
+      notification.style.cssText = `
+        position: fixed;
+        top: 90px;
+        right: 20px;
+        background: ${type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#3b82f6'};
+        color: white;
+        padding: 14px 24px;
+        border-radius: 12px;
+        font-size: 14px;
+        font-weight: 600;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+        z-index: 10000;
+        animation: slideInRight 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      `;
+      
+      const icon = type === 'success' ? '✓' : type === 'error' ? '✗' : 'ℹ';
+      notification.innerHTML = `<span>${icon}</span><span>${message}</span>`;
+      
+      document.body.appendChild(notification);
+      
+      // Auto-remove after 4 seconds
+      setTimeout(() => {
+        notification.style.opacity = '0';
+        notification.style.transition = 'opacity 0.3s ease';
+        setTimeout(() => notification.remove(), 300);
+      }, 4000);
+    }
+    
+    // ========== DYNAMIC PRICE UPDATE ==========
+    const packageSelect = document.querySelector('#id_package');
+    const totalPriceInput = document.querySelector('#id_total_price');
+    
+    if (packageSelect && totalPriceInput) {
+      const packagePrices = {};
+      
+      fetch('/api/package-prices/')
+        .then(response => response.json())
+        .then(data => {
+          data.packages.forEach(pkg => {
+            packagePrices[pkg.id] = parseFloat(pkg.price);
+          });
+        })
+        .catch(error => {
+          console.error('Error loading package prices:', error);
+        });
+      
+      packageSelect.addEventListener('change', function() {
+        const selectedPackageId = this.value;
+        if (selectedPackageId && packagePrices[selectedPackageId]) {
+          const basePrice = packagePrices[selectedPackageId];
+          totalPriceInput.value = basePrice.toFixed(2);
+          totalPriceInput.style.backgroundColor = '#dbeafe';
+          totalPriceInput.style.transition = 'background-color 0.3s ease';
+          setTimeout(() => {
+            totalPriceInput.style.backgroundColor = '';
+          }, 1000);
+        }
+      });
+    }
+  });
+</script>
+{% endblock %}

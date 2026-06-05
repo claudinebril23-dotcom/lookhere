@@ -1,0 +1,690 @@
+{% extends 'bookings/base.html' %}
+{% load static %}
+
+{% block title %}About Us Look Here Self Portrait Studio{% endblock %}
+
+{% block content %}
+
+<!-- ── Page Hero ── -->
+<div class="abt-hero">
+  <span class="abt-eyebrow">Our Story</span>
+  <h1 class="abt-hero-title">More Than Just Photos <br>We Capture <em>Your</em> Story</h1>
+  <p class="abt-hero-sub">Look Here Self Portrait Studio is Rosario, Batangas' premier self-portrait experience where you take the wheel, own the frame, and walk away with memories that last a lifetime.</p>
+</div>
+
+<!-- ── Mission + Image ── -->
+<div class="abt-split">
+  <div class="abt-split-text">
+    <span class="abt-section-label">Who We Are</span>
+    <h2>A Studio Built for <em>You</em></h2>
+    <p>We started Look Here because we believed everyone deserves a professional photo experience not just on special occasions, but whenever you feel like it. No photographer hovering over you, no awkward direction. Just you, great lighting, and a camera ready to capture your best self.</p>
+    <p>Located at the 2nd Floor of the Chinabank Building along Gualberto Avenue in Rosario, Batangas, our studio is designed to be welcoming, fun, and fully equipped so every session feels effortless.</p>
+    <div class="abt-values">
+      <div class="abt-value">
+        <span class="abt-value-icon">🎯</span>
+        <div>
+          <strong>You're in Control</strong>
+          <p>Self-portrait means exactly that your pose, your vibe, your pace.</p>
+        </div>
+      </div>
+      <div class="abt-value">
+        <span class="abt-value-icon">✨</span>
+        <div>
+          <strong>Professional Quality</strong>
+          <p>Studio grade lighting and equipment so every shot looks polished.</p>
+        </div>
+      </div>
+      <div class="abt-value">
+        <span class="abt-value-icon">❤️</span>
+        <div>
+          <strong>Every Occasion Welcome</strong>
+          <p>Solo, couples, groups, academic milestones, birthdays we're here for all of it.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="abt-split-img">
+    <div class="abt-img-card">
+      {% if site_settings.about_page_image %}
+        <img src="{{ site_settings.about_page_image.url }}" alt="Look Here Studio Interior" loading="lazy">
+      {% else %}
+        <img src="https://images.unsplash.com/photo-1554048612-b6a482bc67e5?w=700&q=80" alt="Look Here Studio Interior" loading="lazy">
+      {% endif %}
+      <div class="abt-img-badge">
+        <span>📍</span>
+        <span>Rosario, Batangas</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ── What We Offer ── -->
+<div class="abt-section">
+  <span class="abt-section-label">What We Offer</span>
+  <h2>Session Types for Every Moment</h2>
+  <p class="abt-section-sub">Whether you're celebrating a milestone or just want great photos, we have a session made for you.</p>
+  <div class="abt-sessions-grid">
+    <div class="abt-session-card">
+      <div class="abt-session-icon">🤳</div>
+      <h3>Solo Snap</h3>
+      <p>Just you and the camera. Perfect for portraits, content creation, or simply treating yourself.</p>
+    </div>
+    <div class="abt-session-card">
+      <div class="abt-session-icon">👫</div>
+      <h3>Twinning Moments</h3>
+      <p>Couples, best friends, or siblings — capture your bond in a fun and relaxed setting.</p>
+    </div>
+    <div class="abt-session-card">
+      <div class="abt-session-icon">🎉</div>
+      <h3>Group Vibes</h3>
+      <p>Bring the whole squad. Group sessions are lively, fun, and full of energy.</p>
+    </div>
+    <div class="abt-session-card">
+      <div class="abt-session-icon">🎓</div>
+      <h3>Academic Solo & Group</h3>
+      <p>Graduation, recognition day, or school events — commemorate your achievement in style.</p>
+    </div>
+    <div class="abt-session-card">
+      <div class="abt-session-icon">🎊</div>
+      <h3>Super Party</h3>
+      <p>Big celebrations deserve big photos. Our Super Party package fits the whole crew.</p>
+    </div>
+    <div class="abt-session-card">
+      <div class="abt-session-icon">📸</div>
+      <h3>Concept Shoots</h3>
+      <p>Want something more creative? We offer concept photoshoots with a photographer. <a href="https://www.facebook.com/p/Look-Here-Self-Portrait-Studio-61564573776400/" target="_blank" rel="noopener">Message us</a> for details.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ── Visit Us ── -->
+<div class="abt-visit">
+  <div class="abt-visit-text">
+    <span class="abt-section-label">Find Us</span>
+    <h2>Come Visit the Studio</h2>
+    <p>We're conveniently located in the heart of Rosario, Batangas. Walk-ins are welcome, but we recommend booking online to secure your preferred time slot.</p>
+    <ul class="abt-contact-list">
+      <li>
+        <span>📍</span>
+        <span>2nd Floor, Chinabank Bldg, Gualberto Ave, Poblacion B, Rosario, Batangas 4225</span>
+      </li>
+      <li>
+        <span>✉️</span>
+        <a href="mailto:lookherespstudio@gmail.com">lookherespstudio@gmail.com</a>
+      </li>
+      <li>
+        <span>📞</span>
+        <a href="tel:+639123456789">+63 912 345 6789</a>
+      </li>
+      <li>
+        <span>🕐</span>
+        <span>Mon – Sat: 9:00 AM – 6:00 PM &nbsp;|&nbsp; Sun: 10:00 AM – 5:00 PM</span>
+      </li>
+    </ul>
+    <div class="abt-visit-btns">
+      <a href="https://www.google.com/maps/place/Look+Here+Self+Portrait+Studio/@13.8451748,121.2032245,17z" target="_blank" rel="noopener" class="abt-btn abt-btn-primary">📍 View on Google Maps</a>
+      <a href="{% url 'packages' %}" class="abt-btn abt-btn-outline">Book a Session →</a>
+    </div>
+  </div>
+  <div class="abt-visit-map">
+    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3873.5!2d121.2032245!3d13.8451748!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x33bd15d3c893caa9%3A0xd31d92460fd79e7!2sLook%20Here%20Self%20Portrait%20Studio!5e0!3m2!1sen!2sph!4v1" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Look Here Self Portrait Studio location"></iframe>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<style>
+/* ═══════════════════════════════════════════════════════════
+   MODERN ABOUT PAGE - Enhanced UI/UX Design
+   ═══════════════════════════════════════════════════════════ */
+
+/* ── CSS Variables ── */
+:root {
+  --abt-primary: #2563eb;
+  --abt-primary-dark: #1d4ed8;
+  --abt-primary-light: #3b82f6;
+  --abt-text-dark: #0f172a;
+  --abt-text-muted: #64748b;
+  --abt-text-light: #94a3b8;
+  --abt-border: #e2e8f0;
+  --abt-bg-light: #f8fafc;
+  --abt-radius-sm: 8px;
+  --abt-radius-md: 12px;
+  --abt-radius-lg: 16px;
+  --abt-radius-xl: 20px;
+  --abt-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+  --abt-shadow-md: 0 4px 16px rgba(0, 0, 0, 0.06);
+  --abt-shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.1);
+  --abt-shadow-xl: 0 12px 48px rgba(37, 99, 235, 0.12);
+  --abt-transition: all 0.3s ease;
+}
+
+/* ── Eyebrow & Section Labels ── */
+.abt-eyebrow,
+.abt-section-label {
+  display: inline-block;
+  background: linear-gradient(135deg, #dbeafe, #e0e7ff);
+  color: #2563eb;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 0.4rem 1rem;
+  border-radius: 50px;
+  margin-bottom: 1rem;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.1);
+}
+
+/* ── Hero Section ── */
+.abt-hero {
+  text-align: center;
+  padding: 5rem 2rem 3rem;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.abt-hero-title {
+  font-family: 'Poppins', sans-serif;
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 900;
+  color: #0f172a;
+  line-height: 1.15;
+  margin: 0 0 1.25rem;
+  letter-spacing: -0.02em;
+}
+
+.abt-hero-title em {
+  font-style: italic;
+  font-family: 'Playfair Display', serif;
+  color: #2563eb;
+}
+
+.abt-hero-sub {
+  color: #64748b;
+  font-size: 1.05rem;
+  line-height: 1.8;
+  margin: 0;
+  max-width: 580px;
+  margin-left: auto;
+  margin-right: auto;
+  font-weight: 400;
+}
+
+/* ── Split Section ── */
+.abt-split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto 5rem;
+  padding: 0 2rem;
+}
+
+.abt-split-text h2 {
+  font-family: 'Poppins', sans-serif;
+  font-size: clamp(1.6rem, 3.5vw, 2.2rem);
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0 0 1.25rem;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+
+.abt-split-text h2 em {
+  font-style: italic;
+  font-family: 'Playfair Display', serif;
+  color: #2563eb;
+}
+
+.abt-split-text > p {
+  color: #475569;
+  font-size: 0.95rem;
+  line-height: 1.8;
+  margin-bottom: 1.1rem;
+  font-weight: 400;
+}
+
+/* Values */
+.abt-values {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  margin-top: 2rem;
+}
+
+.abt-value {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+  padding: 1rem;
+  border-radius: var(--abt-radius-md);
+  background: var(--abt-bg-light);
+  border: 1px solid var(--abt-border);
+  transition: var(--abt-transition);
+}
+
+.abt-value:hover {
+  border-color: #bfdbfe;
+  box-shadow: var(--abt-shadow-sm);
+}
+
+.abt-value-icon {
+  font-size: 1.4rem;
+  flex-shrink: 0;
+  margin-top: 0.15rem;
+}
+
+.abt-value strong {
+  display: block;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 0.3rem;
+  letter-spacing: -0.01em;
+}
+
+.abt-value p {
+  font-size: 0.85rem;
+  color: #64748b;
+  margin: 0;
+  line-height: 1.6;
+  font-weight: 400;
+}
+
+/* Image Card */
+.abt-img-card {
+  position: relative;
+  border-radius: var(--abt-radius-xl);
+  overflow: hidden;
+  box-shadow: var(--abt-shadow-lg);
+  border: 1px solid var(--abt-border);
+}
+
+.abt-img-card img {
+  width: 100%;
+  height: 450px;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.5s ease;
+}
+
+.abt-img-card:hover img {
+  transform: scale(1.03);
+}
+
+.abt-img-badge {
+  position: absolute;
+  bottom: 16px;
+  left: 16px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-radius: 50px;
+  padding: 0.55rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #0f172a;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+/* ── Stats Section ── */
+.abt-stats {
+  background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 50%, #3b82f6 100%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0;
+  flex-wrap: wrap;
+  padding: 3rem 2.5rem;
+  margin-bottom: 5rem;
+  border-radius: var(--abt-radius-lg);
+  max-width: 1100px;
+  margin-left: auto;
+  margin-right: auto;
+  box-shadow: 0 16px 48px rgba(37, 99, 235, 0.25);
+}
+
+.abt-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.75rem 2.5rem;
+}
+
+.abt-stat-num {
+  font-family: 'Poppins', sans-serif;
+  font-size: 2.4rem;
+  font-weight: 900;
+  color: #fff;
+  line-height: 1;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  letter-spacing: -0.02em;
+}
+
+.abt-stat-lbl {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.7);
+  margin-top: 0.4rem;
+}
+
+.abt-stat-div {
+  width: 1px;
+  height: 48px;
+  background: rgba(255, 255, 255, 0.2);
+  flex-shrink: 0;
+  border-radius: 1px;
+}
+
+/* ── Sessions Section ── */
+.abt-section {
+  max-width: 1200px;
+  margin: 0 auto 5rem;
+  padding: 0 2rem;
+  text-align: center;
+}
+
+.abt-section h2 {
+  font-family: 'Poppins', sans-serif;
+  font-size: clamp(1.6rem, 3.5vw, 2.2rem);
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0 0 0.75rem;
+  letter-spacing: -0.01em;
+}
+
+.abt-section-sub {
+  color: #64748b;
+  font-size: 0.98rem;
+  max-width: 540px;
+  margin: 0 auto 3rem;
+  line-height: 1.75;
+  font-weight: 400;
+}
+
+.abt-sessions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+  text-align: left;
+}
+
+.abt-session-card {
+  background: #fff;
+  border: 1px solid var(--abt-border);
+  border-radius: var(--abt-radius-lg);
+  padding: 1.75rem;
+  box-shadow: var(--abt-shadow-sm);
+  transition: var(--abt-transition);
+}
+
+.abt-session-card:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--abt-shadow-xl);
+  border-color: #bfdbfe;
+}
+
+.abt-session-icon {
+  font-size: 2rem;
+  margin-bottom: 0.85rem;
+  display: block;
+}
+
+.abt-session-card h3 {
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0 0 0.5rem;
+  letter-spacing: -0.01em;
+}
+
+.abt-session-card p {
+  font-size: 0.87rem;
+  color: #64748b;
+  line-height: 1.7;
+  margin: 0;
+  font-weight: 400;
+}
+
+.abt-session-card a {
+  color: #2563eb;
+  font-weight: 600;
+  text-decoration: none;
+  transition: var(--abt-transition);
+}
+
+.abt-session-card a:hover {
+  text-decoration: underline;
+  color: #1d4ed8;
+}
+
+/* ── Visit Section ── */
+.abt-visit {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+  align-items: stretch;
+  max-width: 1200px;
+  margin: 0 auto 5rem;
+  padding: 0 2rem;
+}
+
+.abt-visit-text h2 {
+  font-family: 'Poppins', sans-serif;
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0 0 1rem;
+  letter-spacing: -0.01em;
+}
+
+.abt-visit-text > p {
+  color: #475569;
+  font-size: 0.93rem;
+  line-height: 1.8;
+  margin-bottom: 1.5rem;
+  font-weight: 400;
+}
+
+.abt-contact-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.abt-contact-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  font-size: 0.9rem;
+  color: #475569;
+  line-height: 1.6;
+  font-weight: 400;
+}
+
+.abt-contact-list li span:first-child {
+  flex-shrink: 0;
+  font-size: 1.1rem;
+  margin-top: 0.1rem;
+}
+
+.abt-contact-list a {
+  color: #2563eb;
+  text-decoration: none;
+  font-weight: 600;
+  transition: var(--abt-transition);
+}
+
+.abt-contact-list a:hover {
+  text-decoration: underline;
+  color: #1d4ed8;
+}
+
+.abt-visit-btns {
+  display: flex;
+  gap: 0.85rem;
+  flex-wrap: wrap;
+}
+
+.abt-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.85rem 1.5rem;
+  border-radius: var(--abt-radius-md);
+  font-size: 0.88rem;
+  font-weight: 700;
+  font-family: 'Poppins', sans-serif;
+  text-decoration: none;
+  transition: var(--abt-transition);
+}
+
+.abt-btn-primary {
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(37, 99, 235, 0.3);
+}
+
+.abt-btn-primary:hover {
+  background: linear-gradient(135deg, #1d4ed8, #1e40af);
+  transform: translateY(-2px);
+  color: #fff;
+  box-shadow: 0 6px 24px rgba(37, 99, 235, 0.4);
+}
+
+.abt-btn-outline {
+  background: transparent;
+  color: #2563eb;
+  border: 2px solid #2563eb;
+}
+
+.abt-btn-outline:hover {
+  background: #2563eb;
+  color: #fff;
+  transform: translateY(-2px);
+}
+
+.abt-visit-map {
+  border-radius: var(--abt-radius-lg);
+  overflow: hidden;
+  box-shadow: var(--abt-shadow-lg);
+  min-height: 400px;
+  border: 1px solid var(--abt-border);
+}
+
+/* ── Responsive ── */
+@media (max-width: 900px) {
+  .abt-split {
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+  }
+
+  .abt-split-img {
+    order: -1;
+  }
+
+  .abt-img-card img {
+    height: 300px;
+  }
+
+  .abt-visit {
+    grid-template-columns: 1fr;
+  }
+
+  .abt-visit-map {
+    min-height: 300px;
+  }
+}
+
+@media (max-width: 600px) {
+  .abt-hero {
+    padding: 4rem 1.5rem 2.5rem;
+  }
+
+  .abt-hero-title {
+    font-size: 1.8rem;
+  }
+
+  .abt-hero-sub {
+    font-size: 0.95rem;
+  }
+
+  .abt-split {
+    padding: 0 1.5rem;
+    margin-bottom: 4rem;
+  }
+
+  .abt-section {
+    padding: 0 1.5rem;
+  }
+
+  .abt-stats {
+    padding: 2.5rem 1.5rem;
+    margin-left: 1.5rem;
+    margin-right: 1.5rem;
+    border-radius: var(--abt-radius-md);
+  }
+
+  .abt-stat {
+    padding: 0.5rem 1.5rem;
+  }
+
+  .abt-stat-num {
+    font-size: 1.8rem;
+  }
+
+  .abt-stat-div {
+    display: none;
+  }
+
+  .abt-sessions-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .abt-visit {
+    padding: 0 1.5rem;
+  }
+
+  .abt-values {
+    gap: 1rem;
+  }
+
+  .abt-value {
+    padding: 0.85rem;
+  }
+
+  .abt-btn {
+    padding: 0.75rem 1.25rem;
+    font-size: 0.82rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .abt-hero-title {
+    font-size: 1.6rem;
+  }
+
+  .abt-split-text h2,
+  .abt-section h2 {
+    font-size: 1.4rem;
+  }
+
+  .abt-visit-text h2 {
+    font-size: 1.3rem;
+  }
+}
+</style>
+{% endblock %}

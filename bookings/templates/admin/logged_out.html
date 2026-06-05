@@ -1,0 +1,494 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static %}
+
+{% block title %}{% translate 'Logged out' %} | Look Here Studio Admin{% endblock %}
+
+{% block branding %}{% endblock %}
+
+{% block extrastyle %}
+{{ block.super }}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  /* ---- Reset & Page ---- */
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    min-height: 100vh;
+    padding: 32px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(145deg, #4f46e5 0%, #667eea 35%, #764ba2 70%, #a855f7 100%);
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  /* ---- Animated Background Orbs ---- */
+  .lh-bg {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
+
+  .lh-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(60px);
+    opacity: 0.35;
+    animation: floatOrb var(--dur, 8s) ease-in-out infinite alternate;
+  }
+
+  .lh-orb-1 {
+    width: 420px;
+    height: 420px;
+    background: radial-gradient(circle, #a78bfa, transparent 70%);
+    top: -120px;
+    left: -100px;
+    --dur: 9s;
+  }
+
+  .lh-orb-2 {
+    width: 340px;
+    height: 340px;
+    background: radial-gradient(circle, #60a5fa, transparent 70%);
+    bottom: -80px;
+    right: -60px;
+    --dur: 11s;
+  }
+
+  .lh-orb-3 {
+    width: 260px;
+    height: 260px;
+    background: radial-gradient(circle, #f0abfc, transparent 70%);
+    top: 50%;
+    left: 60%;
+    --dur: 7s;
+  }
+
+  @keyframes floatOrb {
+    0% {
+      transform: translate(0, 0) scale(1);
+    }
+
+    50% {
+      transform: translate(30px, -20px) scale(1.08);
+    }
+
+    100% {
+      transform: translate(-15px, 25px) scale(0.95);
+    }
+  }
+
+  /* ---- Grid / Dots Pattern ---- */
+  .lh-dots {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    background-image: radial-gradient(circle, rgba(255, 255, 255, 0.12) 1px, transparent 1px);
+    background-size: 36px 36px;
+  }
+
+  /* ---- Hide default admin chrome ---- */
+  #header,
+  .breadcrumbs,
+  #footer,
+  #user-tools,
+  .admin-sidebar,
+  .admin-content-wrapper,
+  #hamburger-toggle,
+  .sidebar-overlay {
+    display: none !important;
+  }
+
+  /* Hide Django admin page title */
+  #content h1,
+  #content-main h1 {
+    display: none !important;
+  }
+
+  /* Neutralize Django admin container layout */
+  #container,
+  #content,
+  #content-main {
+    padding: 0 !important;
+    margin: 0 !important;
+    max-width: none !important;
+    width: auto !important;
+    min-height: 0 !important;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+
+  /* ---- Card ---- */
+  .lh-card {
+    position: relative;
+    z-index: 10;
+    background: rgba(255, 255, 255, 0.97);
+    backdrop-filter: blur(20px);
+    border-radius: 28px;
+    box-shadow:
+      0 32px 80px rgba(0, 0, 0, 0.28),
+      0 8px 24px rgba(0, 0, 0, 0.14),
+      inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    padding: 40px 44px 36px;
+    width: 100%;
+    max-width: 440px;
+    animation: cardUp 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+    text-align: center;
+  }
+
+  @keyframes cardUp {
+    from {
+      opacity: 0;
+      transform: translateY(36px) scale(0.97);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  /* ---- Logo ---- */
+  .lh-logo-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 22px;
+  }
+
+  .lh-logo-ring {
+    padding: 4px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea, #a855f7, #667eea);
+    background-size: 200% 200%;
+    animation: gradientSpin 3s linear infinite, logoPop 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.15s both;
+    box-shadow: 0 8px 32px rgba(102, 126, 234, 0.35);
+  }
+
+  @keyframes gradientSpin {
+    0% {
+      background-position: 0% 50%;
+    }
+
+    50% {
+      background-position: 100% 50%;
+    }
+
+    100% {
+      background-position: 0% 50%;
+    }
+  }
+
+  @keyframes logoPop {
+    from {
+      opacity: 0;
+      transform: scale(0.7);
+    }
+
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  .lh-logo {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 50%;
+    display: block;
+    border: 3px solid #fff;
+    background: #f0f4ff;
+    animation: logoFloat 4s ease-in-out infinite;
+  }
+
+  @keyframes logoFloat {
+
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+
+    50% {
+      transform: translateY(-6px);
+    }
+  }
+
+  .lh-studio-name {
+    margin-top: 14px;
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: -0.3px;
+    background: linear-gradient(135deg, #4f46e5, #764ba2);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-align: center;
+    line-height: 1.2;
+  }
+
+  .lh-tagline {
+    margin-top: 5px;
+    font-size: 11.5px;
+    font-weight: 600;
+    color: #b0b7c3;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    text-align: center;
+  }
+
+  /* ---- Divider ---- */
+  .lh-divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .lh-divider::before,
+  .lh-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(to right, transparent, #e5e7eb, transparent);
+  }
+
+  .lh-divider span {
+    font-size: 12px;
+    font-weight: 600;
+    color: #d1d5db;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  /* ---- Success Message ---- */
+  .lh-success {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    border-left: 4px solid #10b981;
+    color: #065f46;
+    padding: 14px 16px;
+    border-radius: 12px;
+    margin-bottom: 22px;
+    font-size: 13.5px;
+    font-weight: 500;
+    animation: fadeIn 0.4s ease;
+  }
+
+  .lh-success-icon {
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* ---- Sign In Button ---- */
+  .lh-btn {
+    width: 100%;
+    padding: 15px 24px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #ffffff;
+    border: none;
+    border-radius: 14px;
+    font-size: 15px;
+    font-weight: 700;
+    font-family: 'Inter', sans-serif;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+  }
+
+  .lh-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.18) 0%, transparent 60%);
+    opacity: 0;
+    transition: opacity 0.25s;
+  }
+
+  .lh-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 32px rgba(102, 126, 234, 0.5);
+  }
+
+  .lh-btn:hover::before {
+    opacity: 1;
+  }
+
+  .lh-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.35);
+  }
+
+  .lh-btn-inner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ---- Footer ---- */
+  .lh-footer {
+    text-align: center;
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid #f0f0f5;
+  }
+
+  .lh-footer-text {
+    font-size: 13px;
+    color: #9ca3af;
+    font-weight: 400;
+  }
+
+  .lh-footer-link {
+    color: #667eea;
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.2s;
+  }
+
+  .lh-footer-link:hover {
+    color: #764ba2;
+    text-decoration: underline;
+  }
+
+  /* ---- Responsive ---- */
+  @media (max-width: 520px) {
+    .lh-card {
+      border-radius: 20px;
+      padding: 36px 24px 32px;
+      margin: 16px;
+    }
+
+    .lh-logo {
+      width: 88px;
+      height: 88px;
+    }
+
+    .lh-studio-name {
+      font-size: 19px;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Background -->
+<div class="lh-bg">
+  <div class="lh-orb lh-orb-1"></div>
+  <div class="lh-orb lh-orb-2"></div>
+  <div class="lh-orb lh-orb-3"></div>
+</div>
+<div class="lh-dots"></div>
+
+<div class="lh-card">
+
+  <!-- Logo & Branding -->
+  <div class="lh-logo-wrap">
+    <div class="lh-logo-ring">
+      <img src="{% static 'bookings/images/Logo.jpg' %}" alt="Look Here Self Portrait Studio Logo" class="lh-logo">
+    </div>
+    <p class="lh-studio-name">Look Here Studio</p>
+    <p class="lh-tagline">Self Portrait Studio · Admin</p>
+  </div>
+
+  <div class="lh-divider"><span>Logged Out Successfully</span></div>
+
+  <!-- Success Message -->
+  <div class="lh-success">
+    <span class="lh-success-icon">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+        stroke-linecap="round" stroke-linejoin="round">
+        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+        <polyline points="22 4 12 14.01 9 11.01"></polyline>
+      </svg>
+    </span>
+    <span>
+      You have been successfully logged out. Thank you for using Look Here Studio Admin.
+    </span>
+  </div>
+
+  <!-- Sign In Again Button -->
+  <a href="{% url 'admin:login' %}" class="lh-btn">
+    <div class="lh-btn-inner">
+      <span class="lh-btn-text">Sign In Again</span>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+        stroke-linecap="round" stroke-linejoin="round">
+        <line x1="5" y1="12" x2="19" y2="12" />
+        <polyline points="12 5 19 12 12 19" />
+      </svg>
+    </div>
+  </a>
+
+  <!-- Footer -->
+  <div class="lh-footer">
+    <p class="lh-footer-text">
+      Redirecting to login in <span id="countdown">3</span> seconds...
+    </p>
+    <p class="lh-footer-text" style="margin-top: 8px;">
+      Need help? Contact
+      <a href="mailto:lookherespstudio@gmail.com" class="lh-footer-link">support</a>
+    </p>
+  </div>
+
+</div>
+
+<script>
+  // Auto-redirect to login after 3 seconds
+  let countdown = 3;
+  const countdownEl = document.getElementById('countdown');
+
+  const timer = setInterval(() => {
+    countdown--;
+    if (countdownEl) {
+      countdownEl.textContent = countdown;
+    }
+
+    if (countdown <= 0) {
+      clearInterval(timer);
+      window.location.href = "{% url 'admin:login' %}";
+    }
+  }, 1000);
+</script>
+{% endblock %}

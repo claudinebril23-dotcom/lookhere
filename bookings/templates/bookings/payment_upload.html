@@ -1,0 +1,99 @@
+{% extends 'bookings/base.html' %}
+
+{% block title %}Upload Payment Proof - Narrative Studio{% endblock %}
+
+{% block content %}
+<div style="margin-bottom:1.5rem;">
+    <h2 style="margin-bottom:0.25rem;">Upload Payment Proof</h2>
+    <p>Complete your booking by uploading your payment receipt.</p>
+</div>
+
+<div class="booking-wrapper" style="grid-template-columns: 1fr;">
+    <div class="booking-form-container">
+        <div style="background:rgba(255,255,255,0.05);border-radius:10px;padding:1.5rem;margin-bottom:2rem;">
+            <h3 style="color:white;margin-bottom:1rem;">Booking Summary</h3>
+            <div style="display:grid;gap:0.75rem;font-size:0.9rem;color:var(--text-muted);">
+                <div style="display:flex;justify-content:space-between;">
+                    <span>Reference Code:</span>
+                    <span style="color:var(--primary);font-weight:600;">{{ booking.reference_code }}</span>
+                </div>
+                <div style="display:flex;justify-content:space-between;">
+                    <span>Date:</span>
+                    <span>{{ booking.date }}</span>
+                </div>
+                <div style="display:flex;justify-content:space-between;">
+                    <span>Time:</span>
+                    <span>{{ booking.time }}</span>
+                </div>
+                <div style="display:flex;justify-content:space-between;">
+                    <span>Package:</span>
+                    <span>{{ booking.package.name }}</span>
+                </div>
+                <div style="display:flex;justify-content:space-between;border-top:1px solid rgba(255,255,255,0.1);padding-top:0.75rem;margin-top:0.75rem;">
+                    <span style="font-weight:600;">Total Amount:</span>
+                    <span style="color:var(--primary);font-weight:600;font-size:1.1rem;">₱{{ booking.total_price|floatformat:2 }}</span>
+                </div>
+            </div>
+        </div>
+
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label for="payment_proof" style="display:block;margin-bottom:0.75rem;">Upload Payment Receipt *</label>
+                <div style="border:2px dashed rgba(255,255,255,0.2);border-radius:10px;padding:2rem;text-align:center;cursor:pointer;transition:all 0.3s ease;" id="upload-area">
+                    <input type="file" name="payment_proof" id="payment_proof" accept="image/*" required style="display:none;">
+                    <div style="font-size:2rem;margin-bottom:0.5rem;">📸</div>
+                    <p style="color:var(--text-muted);margin:0;margin-bottom:0.5rem;">Click to upload or drag and drop</p>
+                    <p style="color:var(--text-muted);font-size:0.85rem;margin:0;">PNG, JPG, GIF up to 10MB</p>
+                    <p id="file-name" style="color:var(--primary);font-weight:600;margin-top:0.75rem;display:none;"></p>
+                </div>
+            </div>
+
+            <div style="display:flex;gap:1rem;margin-top:2rem;">
+                <button type="submit" class="btn" style="flex:1;justify-content:center;">Upload & Confirm Payment</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const uploadArea = document.getElementById('upload-area');
+    const fileInput = document.getElementById('payment_proof');
+    const fileName = document.getElementById('file-name');
+    
+    uploadArea.addEventListener('click', () => fileInput.click());
+    
+    uploadArea.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        uploadArea.style.borderColor = 'rgba(108,99,255,0.6)';
+        uploadArea.style.background = 'rgba(108,99,255,0.05)';
+    });
+    
+    uploadArea.addEventListener('dragleave', () => {
+        uploadArea.style.borderColor = 'rgba(255,255,255,0.2)';
+        uploadArea.style.background = 'transparent';
+    });
+    
+    uploadArea.addEventListener('drop', (e) => {
+        e.preventDefault();
+        uploadArea.style.borderColor = 'rgba(255,255,255,0.2)';
+        uploadArea.style.background = 'transparent';
+        fileInput.files = e.dataTransfer.files;
+        updateFileName();
+    });
+    
+    fileInput.addEventListener('change', updateFileName);
+    
+    function updateFileName() {
+        if (fileInput.files.length > 0) {
+            fileName.textContent = '✓ ' + fileInput.files[0].name;
+            fileName.style.display = 'block';
+        } else {
+            fileName.style.display = 'none';
+        }
+    }
+});
+</script>
+{% endblock %}

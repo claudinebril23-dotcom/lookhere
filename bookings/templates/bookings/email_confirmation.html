@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: 'Inter', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f8fafc;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .status-box {
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+
+        .status-confirmed {
+            background-color: #d1fae5;
+            border-left: 4px solid #10b981;
+            color: #065f46;
+        }
+
+        .status-under-review {
+            background-color: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            color: #92400e;
+        }
+
+        .details-section {
+            background-color: #f8fafc;
+            padding: 20px;
+            border-radius: 6px;
+            margin: 20px 0;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .detail-value {
+            color: #475569;
+            text-align: right;
+        }
+
+        .footer {
+            background-color: #f1f5f9;
+            padding: 20px;
+            text-align: center;
+            font-size: 12px;
+            color: #64748b;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .footer a {
+            color: #667eea;
+            text-decoration: none;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background-color: #667eea;
+            color: white;
+            padding: 12px 30px;
+            border-radius: 6px;
+            text-decoration: none;
+            margin: 20px 0;
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Look Here Self Portrait Studio</h1>
+            <p style="margin: 10px 0 0 0; font-size: 14px;">Booking Confirmation</p>
+        </div>
+
+        <div class="content">
+            <p>Dear {{ customer_name }},</p>
+
+            <p>Thank you for choosing Look Here Self Portrait Studio! We're excited to have you with us.</p>
+
+            <div class="status-box {{ status_class }}">
+                {{ status_message }}
+            </div>
+
+            <p>Your booking is confirmed for <strong>{{ date }}</strong> at <strong>{{ time }}</strong>. Please make
+                sure to arrive on time so you can fully enjoy your session.</p>
+
+            <p>You will have 30 minutes for your self photo shoot, followed by 15 minutes to select your favorite
+                photos.</p>
+
+            <div class="details-section">
+                <h3 style="margin-top: 0; color: #1e293b;">Booking Details</h3>
+                <div class="detail-row">
+                    <span class="detail-label">Reference Code:</span>
+                    <span class="detail-value">{{ reference_code }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Date:</span>
+                    <span class="detail-value">{{ date }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Time:</span>
+                    <span class="detail-value">{{ time }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Package:</span>
+                    <span class="detail-value">{{ package }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Backdrop:</span>
+                    <span class="detail-value">{{ backdrop }}</span>
+                </div>
+
+                <div class="detail-row">
+                    <span class="detail-label">Add-ons:</span>
+                    <span class="detail-value">{{ addons }}</span>
+                </div>
+
+                <div class="detail-row">
+                    <span class="detail-label">Total Price:</span>
+                    <span class="detail-value" style="font-weight: 600; color: #667eea;">₱{{ total_price }}</span>
+                </div>
+            </div>
+
+            <div class="details-section">
+                <h3 style="margin-top: 0; color: #1e293b;">Studio Address</h3>
+                <p style="margin: 0 0 10px 0;">2nd Floor, Chinabank Bldg<br>Gualberto Avenue, Poblacion B<br>Rosario, 4225 Batangas</p>
+                <a href="https://www.google.com/maps/search/?api=1&query=Chinabank+Building+Gualberto+Avenue+Poblacion+B+Rosario+Batangas"
+                   target="_blank"
+                   style="display:inline-block;background-color:#4285f4;color:#ffffff;padding:9px 18px;border-radius:5px;text-decoration:none;font-size:13px;font-weight:600;">
+                    📍 View on Google Maps
+                </a>
+            </div>
+
+            <p>We can't wait to capture your moments. See you at the studio!</p>
+
+            <p>If you have any questions or need to reschedule, please don't hesitate to contact us.</p>
+        </div>
+
+        <div class="footer">
+            <p style="margin: 0 0 10px 0;">
+                <strong>Look Here Self Portrait Studio</strong><br>
+                Email: <a href="mailto:lookherespstudio@gmail.com">lookherespstudio@gmail.com</a><br>
+                Phone: +63 (123) 456-7890
+            </p>
+            <p style="margin: 10px 0 0 0; font-size: 11px;">
+                © 2025 Look Here Self Portrait Studio. All rights reserved.
+            </p>
+        </div>
+    </div>
+</body>
+
+</html>

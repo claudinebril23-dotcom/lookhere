@@ -1,0 +1,116 @@
+{% extends 'bookings/base.html' %}
+
+{% block title %}Settings - Narrative Studio{% endblock %}
+
+{% block content %}
+<section class="settings">
+    <div class="settings-header">
+        <h2>Settings</h2>
+        <p>Manage your business preferences and account settings</p>
+    </div>
+    
+    <div class="settings-content">
+        <div class="settings-section">
+            <h3>Business Information</h3>
+            <form method="post" class="settings-form">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label>Business Name</label>
+                    <input type="text" name="business_name" value="Narrative Studio" required>
+                </div>
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" name="email" value="hello@narrativestudio.com" required>
+                </div>
+                <div class="form-group">
+                    <label>Phone Number</label>
+                    <input type="tel" name="phone" value="+63 (123) 456-7890" required>
+                </div>
+                <div class="form-group">
+                    <label>Business Address</label>
+                    <textarea name="address" rows="2" required>123 Photography Lane, Studio City, Philippines</textarea>
+                </div>
+            </form>
+        </div>
+        
+        <div class="settings-section">
+            <h3>Notification Preferences</h3>
+            <div class="settings-toggles">
+                <div class="toggle-item">
+                    <div class="toggle-info">
+                        <strong>Booking Notifications</strong>
+                        <span>Get notified when new bookings are made</span>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                <div class="toggle-item">
+                    <div class="toggle-info">
+                        <strong>Review Notifications</strong>
+                        <span>Get notified when customers leave reviews</span>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                <div class="toggle-item">
+                    <div class="toggle-info">
+                        <strong>Email Reminders</strong>
+                        <span>Send reminder emails to customers before sessions</span>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+        
+        <div class="settings-section">
+            <h3>Booking Settings</h3>
+            <form method="post" class="settings-form">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label>Buffer Time Between Sessions</label>
+                    <select name="buffer_time">
+                        <option value="15">15 minutes</option>
+                        <option value="30" selected>30 minutes</option>
+                        <option value="45">45 minutes</option>
+                        <option value="60">60 minutes</option>
+                    </select>
+                </div>
+                <div class="toggle-item">
+                    <div class="toggle-info">
+                        <strong>Auto-Confirm Bookings</strong>
+                        <span>Automatically confirm bookings without manual review</span>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+            </form>
+        </div>
+        
+        <div class="settings-section">
+            <h3>Admin Panel</h3>
+            <p>Access the administrative dashboard to manage bookings, packages, and content.</p>
+            <a href="{% url 'admin:index' %}" class="btn">Go to Admin Panel</a>
+        </div>
+        
+        <div class="settings-section">
+            <h3>Support</h3>
+            <p>Need help? Contact our support team.</p>
+            <p><strong>Email:</strong> support@narrativestudio.com</p>
+            <p><strong>Phone:</strong> +63 (123) 456-7890</p>
+        </div>
+    </div>
+    
+    <div class="settings-actions">
+        <button type="submit" class="btn">Save Changes</button>
+    </div>
+</section>
+{% endblock %}

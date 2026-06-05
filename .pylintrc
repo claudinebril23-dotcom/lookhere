@@ -1,0 +1,132 @@
+[MASTER]
+# Add files or directories to the blacklist
+ignore=migrations,staticfiles,media,node_modules,venv,env
+
+# Use multiple processes to speed up Pylint
+jobs=1
+
+# Pickle collected data for later comparisons
+persistent=yes
+
+# Specify a configuration file
+#rcfile=
+
+[MESSAGES CONTROL]
+# Disable specific warnings
+disable=
+    missing-module-docstring,
+    missing-class-docstring,
+    missing-function-docstring,
+    import-error,
+    no-member,
+    unused-import,
+    unused-variable,
+    unused-argument,
+    redefined-outer-name,
+    broad-except,
+    too-few-public-methods,
+    too-many-arguments,
+    too-many-locals,
+    too-many-branches,
+    too-many-statements,
+    line-too-long,
+    invalid-name,
+    attribute-defined-outside-init,
+    arguments-differ,
+    super-init-not-called,
+    abstract-method,
+    unused-wildcard-import,
+    wildcard-import,
+    redefined-builtin,
+    consider-using-f-string
+
+[REPORTS]
+# Set the output format
+output-format=text
+
+# Include message's id in output
+include-ids=no
+
+# Template used to display messages
+msg-template={path}:{line}: [{msg_id}({symbol}), {obj}] {msg}
+
+# Set the cache size for astng objects
+cache-size=500
+
+[BASIC]
+# Good variable names which should always be accepted
+good-names=i,j,k,ex,Run,_,id,pk
+
+# Bad variable names which should always be refused
+bad-names=foo,bar,baz,toto,tutu,tata
+
+# Colon-delimited sets of names that determine each other's naming style when the name regexes allow several styles
+name-group=
+
+# Include a hint for the correct naming format with invalid-name
+include-naming-hint=no
+
+[FORMAT]
+# Maximum number of characters on a single line
+max-line-length=88
+
+# Maximum number of lines in a module
+max-module-lines=1000
+
+# String used as indentation unit
+indent-string='    '
+
+[DESIGN]
+# Maximum number of arguments for function / method
+max-args=10
+
+# Maximum number of locals for function / method body
+max-locals=25
+
+# Maximum number of return / yield for function / method body
+max-returns=10
+
+# Maximum number of branch for function / method body
+max-branches=20
+
+# Maximum number of statements in function / method body
+max-statements=80
+
+# Maximum number of parents for a class
+max-parents=7
+
+# Maximum number of attributes for a class
+max-attributes=15
+
+# Minimum number of public methods for a class
+min-public-methods=1
+
+# Maximum number of public methods for a class
+max-public-methods=25
+
+[IMPORTS]
+# Deprecated modules which should not be used
+deprecated-modules=regsub,TERMIOS,Bastion,rexec
+
+# Create a graph of every (i.e. internal and external) dependencies in the given file
+import-graph=
+
+# Create a graph of external dependencies in the given file
+ext-import-graph=
+
+# Create a graph of internal dependencies in the given file
+int-import-graph=
+
+[CLASSES]
+# List of method names used to declare (i.e. assign) instance attributes
+defining-attr-methods=__init__,__new__,setUp
+
+# List of valid names for the first argument in a class method
+valid-classmethod-first-arg=cls
+
+# List of valid names for the first argument in a metaclass class method
+valid-metaclass-classmethod-first-arg=mcs
+
+[EXCEPTIONS]
+# Exceptions that will emit a warning when being caught
+overgeneral-exceptions=Exception

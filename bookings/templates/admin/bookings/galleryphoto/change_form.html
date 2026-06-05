@@ -1,0 +1,868 @@
+{% extends "admin/change_form.html" %}
+{% load static %}
+
+{% block extrahead %}
+{{ block.super }}
+<style>
+  /* NUCLEAR OPTION: Hide everything above the form */
+  #content > *:not(form):not(#content-main) {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    position: absolute !important;
+    left: -9999px !important;
+  }
+  
+  #content {
+    padding-top: 0 !important;
+    margin-top: 0 !important;
+  }
+  
+  #content-main {
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+  }
+  
+  /* Hide all h1, breadcrumbs, object-tools */
+  #content h1,
+  #content-main h1,
+  .object-tools,
+  .breadcrumbs,
+  #content > h1,
+  #content-main > h1 {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    position: absolute !important;
+    left: -9999px !important;
+  }
+</style>
+{% endblock %}
+
+{% block breadcrumbs %}
+{# Completely override breadcrumbs - render nothing #}
+{% endblock %}
+
+{% block content_title %}
+{# Override content title to prevent reference code display - render nothing #}
+{% endblock %}
+
+{% block pretitle %}
+{# Override pretitle #}
+{% endblock %}
+
+
+
+{% block extrastyle %}
+{{ block.super }}
+<style>
+  /* ═══════════════════════════════════════════════════════════
+     MODERN GALLERY PHOTO FORM - Complete UI Redesign
+     ═══════════════════════════════════════════════════════════ */
+
+  /* ── Base Layout ── */
+  #content-main {
+    max-width: 960px;
+    margin: -20px auto 0 auto !important;
+    padding: 0;
+    float: none !important;
+    padding-top: 0 !important;
+    overflow: hidden;
+  }
+
+  /* Aggressively hide the top area where reference code appears */
+  #content {
+    padding-top: 0 !important;
+    margin-top: 0 !important;
+  }
+
+  #content > * {
+    margin-top: 0 !important;
+  }
+
+  /* ── Section Cards ── */
+  .module {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 0;
+    margin-bottom: 28px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+    overflow: hidden;
+  }
+
+  .module:last-of-type {
+    margin-bottom: 0;
+  }
+
+  /* ── Section Headers ── */
+  .module h2 {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #ffffff;
+    padding: 16px 24px;
+    margin: 0;
+    font-size: 15px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .module h2::before {
+    display: none;
+  }
+
+  /* ── Form Rows ── */
+  .form-row {
+    padding: 14px 24px !important;
+    border-bottom: 1px solid #f1f5f9 !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 16px !important;
+    min-height: 56px !important;
+    box-sizing: border-box !important;
+    background: transparent !important;
+    transition: background-color 0.15s ease !important;
+  }
+
+  .form-row:hover {
+    background: #f8fafc !important;
+  }
+
+  .form-row:last-child {
+    border-bottom: none !important;
+  }
+
+  /* ── Labels ── */
+  .form-row label,
+  .form-row > label:first-child {
+    font-weight: 600;
+    color: #475569;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    min-width: 130px;
+    max-width: 130px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    line-height: 1.4;
+    padding-top: 0;
+    margin: 0;
+  }
+
+  .required label::after {
+    content: '*';
+    color: #ef4444;
+    font-weight: 700;
+    margin-left: 2px;
+    font-size: 14px;
+  }
+
+  /* ── Field Containers ── */
+  .form-row > div:not(.help):not(.errorlist),
+  .form-row > p,
+  .form-row > .field-box {
+    flex: 1 !important;
+    min-width: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 4px !important;
+    background: transparent !important;
+    border: none !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    align-items: flex-start !important;
+  }
+
+  /* ── Input Fields ── */
+  .form-row input[type="text"],
+  .form-row input[type="email"],
+  .form-row input[type="tel"],
+  .form-row input[type="number"],
+  .form-row textarea {
+    width: 100% !important;
+    height: 42px !important;
+    padding: 0 14px !important;
+    border: 1.5px solid #e2e8f0 !important;
+    border-radius: 10px !important;
+    font-size: 14px !important;
+    color: #1e293b !important;
+    background: #ffffff !important;
+    transition: all 0.2s ease !important;
+    font-family: inherit !important;
+    box-sizing: border-box !important;
+    line-height: 42px !important;
+    box-shadow: none !important;
+  }
+
+  .form-row input[type="text"]:hover,
+  .form-row input[type="email"]:hover,
+  .form-row input[type="tel"]:hover,
+  .form-row input[type="number"]:hover,
+  .form-row textarea:hover {
+    border-color: #cbd5e1 !important;
+  }
+
+  .form-row input[type="text"]:focus,
+  .form-row input[type="email"]:focus,
+  .form-row input[type="tel"]:focus,
+  .form-row input[type="number"]:focus,
+  .form-row textarea:focus {
+    outline: none;
+    border-color: #667eea !important;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.12) !important;
+    background-color: #fafbff !important;
+  }
+
+  .form-row textarea {
+    height: auto !important;
+    min-height: 80px !important;
+    padding: 10px 14px !important;
+    line-height: 1.5 !important;
+    resize: vertical !important;
+  }
+
+  /* ── Readonly / Disabled Fields ── */
+  .form-row input[readonly],
+  .form-row select[disabled],
+  .form-row input[disabled] {
+    background: #f8fafc !important;
+    color: #64748b !important;
+    cursor: not-allowed !important;
+    border-color: #e2e8f0 !important;
+    opacity: 0.8;
+  }
+
+  /* ── Select / Dropdown ── */
+  .form-row select {
+    width: 100% !important;
+    height: 42px !important;
+    min-height: 42px !important;
+    padding: 0 36px 0 14px !important;
+    border: 1.5px solid #e2e8f0 !important;
+    border-radius: 10px !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    color: #1e293b !important;
+    background-color: #ffffff !important;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E") !important;
+    background-repeat: no-repeat !important;
+    background-position: right 12px center !important;
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+    appearance: none !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+    font-family: inherit !important;
+    box-sizing: border-box !important;
+    line-height: 42px !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    box-shadow: none !important;
+    margin: 0 !important;
+  }
+
+  .form-row select:hover {
+    border-color: #cbd5e1 !important;
+  }
+
+  .form-row select:focus {
+    outline: none;
+    border-color: #667eea !important;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.12) !important;
+    background-color: #fafbff !important;
+  }
+
+  .form-row select option {
+    padding: 10px 14px;
+    font-size: 14px;
+    color: #1e293b;
+    background: #ffffff;
+  }
+
+  /* ── Help Text ── */
+  .form-row .help,
+  .form-row p.help {
+    color: #64748b;
+    font-size: 12px;
+    margin: 2px 0 0 0;
+    line-height: 1.5;
+  }
+
+  /* ── Error Styling ── */
+  .form-row .errorlist {
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 8px;
+    padding: 8px 12px;
+    margin: 4px 0 0 0;
+    list-style: none;
+    font-size: 13px;
+  }
+
+  .form-row .errorlist li {
+    color: #dc2626;
+    font-weight: 500;
+  }
+
+  .form-row.errors input,
+  .form-row.errors select,
+  .form-row.errors textarea {
+    border-color: #ef4444 !important;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.10) !important;
+  }
+
+  /* ── Image Preview ── */
+  .form-row img {
+    max-width: 400px !important;
+    border-radius: 10px !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+    margin-top: 12px !important;
+  }
+
+  /* ── File Upload Styling ── */
+  .styled-file-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 8px;
+  }
+
+  .styled-file-current {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+  }
+
+  .styled-file-current-label {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #64748b;
+    white-space: nowrap;
+  }
+
+  .styled-file-current a {
+    color: #667eea !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    text-decoration: none !important;
+    word-break: break-all;
+  }
+
+  .styled-file-current a:hover {
+    text-decoration: underline !important;
+  }
+
+  .styled-file-clear {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 16px;
+    background: rgba(239, 68, 68, 0.06);
+    border: 1px solid rgba(239, 68, 68, 0.25);
+    border-radius: 10px;
+    cursor: pointer;
+    width: fit-content;
+  }
+
+  .styled-file-clear input[type="checkbox"] {
+    width: 18px !important;
+    height: 18px !important;
+    accent-color: #ef4444 !important;
+    cursor: pointer !important;
+    flex-shrink: 0;
+    margin: 0 !important;
+  }
+
+  .styled-file-clear-text {
+    font-size: 14px;
+    font-weight: 600;
+    color: #ef4444;
+    cursor: pointer;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  .styled-file-change-label {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #64748b;
+    margin-bottom: 6px;
+    display: block;
+  }
+
+  .form-row input[type="file"] {
+    padding: 10px 14px !important;
+    background: #ffffff !important;
+    border: 1px dashed #e2e8f0 !important;
+    border-radius: 10px !important;
+    cursor: pointer !important;
+    font-size: 13px !important;
+    color: #475569 !important;
+    width: 100% !important;
+    transition: all 0.2s ease !important;
+    box-sizing: border-box !important;
+  }
+
+  .form-row input[type="file"]:hover {
+    border-color: #667eea !important;
+    background: #fafbff !important;
+  }
+
+  /* Hide original clearable-file-input elements */
+  .clearable-file-input {
+    display: none !important;
+  }
+
+  /* ── Submit Row ── */
+  .submit-row {
+    background: #f8fafc;
+    border-top: 2px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 20px 24px;
+    display: block !important;
+    position: sticky;
+    bottom: 0;
+    z-index: 100;
+    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.04);
+    margin-top: 24px;
+    min-height: 64px;
+  }
+
+  .submit-row input[type="submit"],
+  .submit-row button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 0 28px;
+    height: 44px;
+    min-height: 44px;
+    line-height: 1;
+    border: none;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    box-sizing: border-box;
+    vertical-align: middle;
+    overflow: visible;
+    flex-shrink: 0;
+    font-family: inherit;
+    width: auto !important;
+    margin-right: 12px !important;
+    float: left;
+  }
+
+  .submit-row input[type="submit"].default,
+  .submit-row button.default {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #ffffff;
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+  }
+
+  .submit-row input[type="submit"].default:hover,
+  .submit-row button.default:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+  }
+
+  .submit-row input[type="submit"]:not(.default),
+  .submit-row button:not(.default) {
+    background: #ffffff;
+    color: #475569;
+    border: 2px solid #e2e8f0;
+  }
+
+  .submit-row input[type="submit"]:not(.default):hover,
+  .submit-row button:not(.default):hover {
+    background: #f8fafc;
+    border-color: #667eea;
+    color: #667eea;
+    transform: translateY(-1px);
+  }
+
+  .submit-row input[type="submit"]:active,
+  .submit-row button:active {
+    transform: translateY(0);
+  }
+
+  .submit-row .deletelink-box {
+    float: right !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .submit-row .deletelink {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 0 22px !important;
+    height: 44px !important;
+    min-height: 44px;
+    line-height: 1;
+    background: #fef2f2;
+    color: #dc2626;
+    border: 2px solid #fecaca;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    white-space: nowrap;
+    box-sizing: border-box;
+    vertical-align: middle;
+    overflow: visible;
+    flex-shrink: 0;
+    transition: all 0.2s ease;
+    font-family: inherit;
+    width: auto !important;
+    max-width: fit-content !important;
+    margin: 0 !important;
+    float: none !important;
+  }
+
+  .submit-row .deletelink:hover {
+    background: #fee2e2;
+    border-color: #ef4444;
+    color: #b91c1c;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
+    text-decoration: none;
+  }
+
+  .submit-row .deletelink:active {
+    transform: translateY(0);
+  }
+
+  .submit-row::after {
+    content: '';
+    display: table;
+    clear: both;
+  }
+
+  /* ── Dark Mode Support ── */
+  [data-theme="dark"] .module {
+    background: #1e293b;
+    border-color: #334155;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+  }
+
+  [data-theme="dark"] .module h2 {
+    color: #f1f5f9;
+  }
+
+  [data-theme="dark"] .form-row {
+    border-bottom-color: #334155 !important;
+  }
+
+  [data-theme="dark"] .form-row:hover {
+    background: rgba(255, 255, 255, 0.02) !important;
+  }
+
+  [data-theme="dark"] .form-row label,
+  [data-theme="dark"] .form-row > label:first-child {
+    color: #94a3b8;
+  }
+
+  [data-theme="dark"] .form-row input[type="text"],
+  [data-theme="dark"] .form-row input[type="email"],
+  [data-theme="dark"] .form-row input[type="tel"],
+  [data-theme="dark"] .form-row input[type="number"],
+  [data-theme="dark"] .form-row textarea {
+    background: #0f172a !important;
+    border-color: #334155 !important;
+    color: #e2e8f0 !important;
+  }
+
+  [data-theme="dark"] .form-row select,
+  [data-theme="dark"] .related-widget-wrapper select,
+  [data-theme="dark"] .form-row .related-widget-wrapper select {
+    background-color: #0f172a !important;
+    border-color: #334155 !important;
+    color: #e2e8f0 !important;
+  }
+
+  [data-theme="dark"] .form-row input[readonly],
+  [data-theme="dark"] .form-row select[disabled],
+  [data-theme="dark"] .form-row input[disabled] {
+    background: rgba(255, 255, 255, 0.04) !important;
+    color: #64748b !important;
+    border-color: #334155 !important;
+  }
+
+  [data-theme="dark"] .submit-row {
+    background: #1e293b;
+    border-top-color: #334155;
+  }
+
+  [data-theme="dark"] .submit-row input[type="submit"]:not(.default),
+  [data-theme="dark"] .submit-row button:not(.default) {
+    background: #334155;
+    color: #e2e8f0;
+    border-color: #475569;
+  }
+
+  [data-theme="dark"] .submit-row input[type="submit"]:not(.default):hover,
+  [data-theme="dark"] .submit-row button:not(.default):hover {
+    background: #334155;
+    border-color: #667eea;
+    color: #818cf8;
+  }
+
+  [data-theme="dark"] .submit-row .deletelink {
+    background: rgba(239, 68, 68, 0.15) !important;
+    color: #fca5a5 !important;
+    border-color: rgba(239, 68, 68, 0.3) !important;
+  }
+
+  [data-theme="dark"] .submit-row .deletelink:hover {
+    background: rgba(239, 68, 68, 0.25) !important;
+    color: #ffffff !important;
+    border-color: #ef4444 !important;
+  }
+
+  [data-theme="dark"] .styled-file-current {
+    background: #334155;
+    border-color: #475569;
+  }
+
+  [data-theme="dark"] .styled-file-current-label {
+    color: #94a3b8;
+  }
+
+  [data-theme="dark"] .styled-file-clear {
+    background: rgba(239, 68, 68, 0.2);
+    border-color: rgba(239, 68, 68, 0.4);
+  }
+
+  [data-theme="dark"] .styled-file-change-label {
+    color: #94a3b8;
+  }
+
+  [data-theme="dark"] .form-row input[type="file"] {
+    background: #0f172a !important;
+    border-color: #475569 !important;
+    color: #e2e8f0 !important;
+  }
+
+  [data-theme="dark"] .form-row input[type="file"]:hover {
+    border-color: #667eea !important;
+    background: rgba(102, 126, 234, 0.1) !important;
+  }
+
+  /* ── Responsive Design ── */
+  @media (max-width: 768px) {
+    #content-main {
+      max-width: 100%;
+      padding: 0 12px;
+    }
+
+    .module {
+      border-radius: 12px;
+      margin-bottom: 20px;
+    }
+
+    .module h2 {
+      padding: 14px 16px;
+      font-size: 13px;
+    }
+
+    .form-row {
+      padding: 12px 16px !important;
+      flex-direction: column !important;
+      align-items: flex-start !important;
+      gap: 8px !important;
+      min-height: auto !important;
+    }
+
+    .form-row label,
+    .form-row > label:first-child {
+      min-width: auto !important;
+      max-width: 100% !important;
+      width: 100% !important;
+      font-size: 11px;
+    }
+
+    .form-row > div:not(.help):not(.errorlist),
+    .form-row > p,
+    .form-row > .field-box {
+      width: 100% !important;
+    }
+
+    .submit-row {
+      flex-direction: column !important;
+      align-items: stretch !important;
+      gap: 10px !important;
+      padding: 16px !important;
+      border-radius: 12px;
+    }
+
+    .submit-row input[type="submit"],
+    .submit-row button,
+    .submit-row .deletelink {
+      width: 100% !important;
+      justify-content: center !important;
+    }
+
+    .submit-row .deletelink-box {
+      margin-left: 0 !important;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .module h2 {
+      padding: 12px 14px;
+      font-size: 12px;
+      letter-spacing: 0.03em;
+    }
+
+    .form-row {
+      padding: 10px 14px !important;
+    }
+
+    .form-row input[type="text"],
+    .form-row input[type="email"],
+    .form-row input[type="tel"],
+    .form-row input[type="number"],
+    .form-row textarea {
+      font-size: 13px !important;
+      height: 40px !important;
+    }
+  }
+
+  /* ── Page Header ── */
+  /* Hide h1 titles that contain reference codes */
+  #content h1,
+  #content-main h1,
+  .breadcrumbs {
+    display: none !important;
+  }
+
+  /* Explicitly show form and content */
+  #content > form,
+  #content-main,
+  #content .form-row,
+  #content .module,
+  #content .submit-row {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+</style>
+{% endblock %}
+
+{% block footer %}
+{{ block.super }}
+<style>
+  /* Force top padding on change form - overrides base_site.html */
+  #content {
+    padding-top: 0 !important;
+  }
+
+  /* IMPORTANT: Keep header titles visible */
+  #header .header-title {
+    position: static !important;
+    left: auto !important;
+    top: auto !important;
+    width: auto !important;
+    height: auto !important;
+    overflow: visible !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    display: block !important;
+    font-size: 18px !important;
+    line-height: normal !important;
+    margin-top: 0 !important;
+  }
+</style>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    // Restructure all clearable file inputs
+    document.querySelectorAll('.clearable-file-input').forEach(function (original) {
+      const parent = original.parentNode;
+
+      // Get parts from original
+      const link = original.querySelector('a');
+      const checkbox = original.querySelector('input[type="checkbox"]');
+      const fileInput = original.querySelector('input[type="file"]');
+
+      if (!fileInput) return;
+
+      // Build styled wrapper
+      const wrapper = document.createElement('div');
+      wrapper.className = 'styled-file-wrapper';
+
+      // Current file row
+      if (link) {
+        const currentRow = document.createElement('div');
+        currentRow.className = 'styled-file-current';
+        currentRow.innerHTML = '<span class="styled-file-current-label">Currently:</span>';
+        const linkClone = link.cloneNode(true);
+        currentRow.appendChild(linkClone);
+        wrapper.appendChild(currentRow);
+      }
+
+      // Clear checkbox row
+      if (checkbox) {
+        const clearRow = document.createElement('label');
+        clearRow.className = 'styled-file-clear';
+        const cbClone = checkbox.cloneNode(true);
+        cbClone.style.cssText = 'width:18px!important;height:18px!important;margin:0!important;accent-color:#ef4444';
+        const clearText = document.createElement('span');
+        clearText.className = 'styled-file-clear-text';
+        clearText.textContent = 'Clear current file';
+        clearRow.appendChild(cbClone);
+        clearRow.appendChild(clearText);
+        // Sync checkbox state
+        cbClone.addEventListener('change', function () {
+          checkbox.checked = this.checked;
+        });
+        wrapper.appendChild(clearRow);
+      }
+
+      // Change file row
+      const changeDiv = document.createElement('div');
+      const changeLabel = document.createElement('span');
+      changeLabel.className = 'styled-file-change-label';
+      changeLabel.textContent = 'Change file:';
+      const fileClone = fileInput.cloneNode(true);
+      fileClone.addEventListener('change', function () {
+        // Sync to original input
+        const dt = new DataTransfer();
+        for (const f of this.files) dt.items.add(f);
+        fileInput.files = dt.files;
+      });
+      changeDiv.appendChild(changeLabel);
+      changeDiv.appendChild(fileClone);
+      wrapper.appendChild(changeDiv);
+
+      // Insert wrapper before original and hide original
+      parent.insertBefore(wrapper, original);
+      original.style.display = 'none';
+    });
+  });
+</script>
+{% endblock %}

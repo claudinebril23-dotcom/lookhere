@@ -1,0 +1,880 @@
+﻿{% extends 'bookings/base.html' %}
+{% load static %}
+
+{% block title %}Packages — Look Here Self Portrait Studio{% endblock %}
+
+{% block content %}
+
+<!-- ═══════════════════════════════════════════
+     PAGE HERO
+═══════════════════════════════════════════ -->
+<div class="pkg-hero">
+  <span class="pkg-eyebrow">Our Packages</span>
+  <h1 class="pkg-hero-title">Find Your Perfect<br><em>Session</em></h1>
+  <p class="pkg-hero-sub">From solo portraits to group celebrations — every package is crafted to deliver an unforgettable self-portrait experience in Rosario, Batangas.</p>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     NOTICE BANNER
+═══════════════════════════════════════════ -->
+<div class="pkg-notice">
+  <div class="pkg-notice-icon">💡</div>
+  <div class="pkg-notice-text">
+    <strong>Need something custom?</strong>
+    We also offer <em>Concept Photoshoots</em> with a dedicated photographer, plus <em>Corporate, Event & School</em> photography services.
+    <a href="https://www.facebook.com/p/Look-Here-Self-Portrait-Studio-61564573776400/" target="_blank"
+      rel="noopener">Message us on Facebook</a> for a personalized quote.
+  </div>
+</div>
+
+{% if not bookings_enabled %}
+<div class="pkg-limit-banner pkg-limit-banner--closed">
+  <span class="pkg-limit-icon">🚫</span>
+  <div class="pkg-limit-text">
+    <strong>Bookings are currently unavailable.</strong>
+    Online booking has been temporarily disabled. Please contact us directly to arrange a session.
+  </div>
+</div>
+{% elif today_full %}
+<div class="pkg-limit-banner pkg-limit-banner--full">
+  <span class="pkg-limit-icon">📅</span>
+  <div class="pkg-limit-text">
+    <strong>Today's sessions are fully booked.</strong>
+    You can still book for future dates — select a package below to choose another day.
+  </div>
+</div>
+{% endif %}
+
+<!-- ═══════════════════════════════════════════
+     PACKAGE GRID
+═══════════════════════════════════════════ -->
+<div class="pkg-grid">
+  {% for package in packages %}
+  <div class="pkg-card{% if not bookings_enabled %} pkg-card--disabled{% endif %}"
+    data-description="{{ package.description }}"
+    data-duration="{{ package.duration }}" data-package-id="{{ package.id }}" data-price="{{ package.base_price }}"
+    data-processing="{{ package.processing_time }}"
+    data-image="{% if package.image %}{{ package.image.url }}{% endif %}"
+    data-bookings-enabled="{% if bookings_enabled %}true{% else %}false{% endif %}">
+
+    <!-- Image -->
+    <div class="pkg-card-img">
+      {% if package.image %}
+      <img src="{{ package.image.url }}" alt="{{ package.name }}" loading="lazy">
+      {% else %}
+      <div class="pkg-card-img-placeholder">
+        <span>📸</span>
+      </div>
+      {% endif %}
+
+    </div>
+
+    <!-- Info -->
+    <div class="pkg-card-body">
+      <h3 class="pkg-card-name">{{ package.name }}</h3>
+      <div class="pkg-card-meta">
+        <span class="pkg-meta-item">
+          <span class="pkg-meta-icon">⏱</span>
+          {{ package.duration }} min
+        </span>
+        <span class="pkg-meta-item">
+          <span class="pkg-meta-icon">🖼</span>
+          {{ package.processing_time }}
+        </span>
+      </div>
+      <div class="pkg-card-price">
+        <span class="pkg-price-amount">₱{{ package.base_price|floatformat:0 }}</span>
+        <span class="pkg-price-label">per session</span>
+      </div>
+      {% if bookings_enabled %}
+      <button class="pkg-details-btn" onclick="openPkgModal(this.closest('.pkg-card'))">
+        View Details
+      </button>
+      {% else %}
+      <button class="pkg-details-btn pkg-details-btn--disabled" disabled>
+        Booking Unavailable
+      </button>
+      {% endif %}
+    </div>
+  </div>
+  {% empty %}
+  <div class="pkg-empty">
+    <div class="pkg-empty-icon">📷</div>
+    <p>No packages available yet. Check back soon!</p>
+  </div>
+  {% endfor %}
+</div>
+
+<!-- ═══════════════════════════════════════════
+     PACKAGE MODAL
+═══════════════════════════════════════════ -->
+<div id="pkgModal" class="pkg-modal hidden" role="dialog" aria-modal="true"
+  aria-label="Package Details">
+  <div class="pkg-modal-backdrop" onclick="closePkgModal()"></div>
+  <div class="pkg-modal-box">
+    <button class="pkg-modal-close" onclick="closePkgModal()" aria-label="Close modal">✕</button>
+    <div class="pkg-modal-inner">
+
+      <!-- Left: Image -->
+      <div class="pkg-modal-img-col">
+        <img id="pkgModalImg" src="" alt="">
+        <div id="pkgModalImgPlaceholder" class="pkg-modal-img-placeholder hidden">
+          <span>📸</span>
+        </div>
+      </div>
+
+      <!-- Right: Details -->
+      <div class="pkg-modal-detail-col">
+        <h2 id="pkgModalTitle"></h2>
+        <div class="pkg-modal-meta-row">
+          <span id="pkgModalDuration" class="pkg-modal-meta-chip">⏱</span>
+          <span id="pkgModalProcessing" class="pkg-modal-meta-chip">🖼</span>
+        </div>
+        <div id="pkgModalDesc" class="pkg-modal-desc"></div>
+        <div class="pkg-modal-price-row">
+          <span id="pkgModalPrice" class="pkg-modal-price"></span>
+          <span class="pkg-modal-price-label">per session</span>
+        </div>
+        <div id="pkgModalBookWrap">
+          <a id="pkgModalBookBtn" href="#" class="pkg-book-btn">Book This Package →</a>
+          <div id="pkgModalFullNote" class="pkg-modal-full-note" style="display:none;">
+            📅 Today is fully booked — you can still choose a future date after clicking Book.
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  var BOOKINGS_ENABLED = {% if bookings_enabled %}true{% else %}false{% endif %};
+  var TODAY_FULL = {% if today_full %}true{% else %}false{% endif %};
+
+  function openPkgModal(card) {
+    var modal = document.getElementById('pkgModal');
+    var imgEl = document.getElementById('pkgModalImg');
+    var placeholder = document.getElementById('pkgModalImgPlaceholder');
+    var imgSrc = card.dataset.image;
+
+    if (imgSrc) {
+      imgEl.src = imgSrc;
+      imgEl.classList.remove('hidden');
+      placeholder.classList.add('hidden');
+    } else {
+      imgEl.classList.add('hidden');
+      placeholder.classList.remove('hidden');
+    }
+
+    document.getElementById('pkgModalTitle').textContent = card.querySelector('.pkg-card-name').textContent;
+    document.getElementById('pkgModalDuration').textContent = '⏱ ' + card.dataset.duration + ' min session';
+    document.getElementById('pkgModalProcessing').textContent = '🖼 ' + card.dataset.processing + ' processing';
+    document.getElementById('pkgModalPrice').textContent = '₱' + parseFloat(card.dataset.price).toLocaleString();
+
+    var desc = card.dataset.description || '';
+    var descEl = document.getElementById('pkgModalDesc');
+    var lines = desc.split('\n').map(function (l) { return l.trim(); }).filter(function (l) { return l; });
+    if (lines.length > 1) {
+      descEl.innerHTML = '<ul>' + lines.map(function (l) { return '<li>' + l + '</li>'; }).join('') + '</ul>';
+    } else {
+      descEl.textContent = desc;
+    }
+
+    var bookBtn  = document.getElementById('pkgModalBookBtn');
+    var fullNote = document.getElementById('pkgModalFullNote');
+
+    bookBtn.href = '/book/?package=' + card.dataset.packageId;
+    bookBtn.classList.remove('pkg-book-btn--disabled');
+    fullNote.style.display = 'none';
+
+    // Show today-full advisory note (booking link still works — future dates are selectable)
+    if (TODAY_FULL) {
+      fullNote.style.display = 'block';
+    }
+
+    modal.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closePkgModal() {
+    document.getElementById('pkgModal').classList.add('hidden');
+    document.body.style.overflow = 'auto';
+  }
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') closePkgModal();
+  });
+</script>
+
+<style>
+  /* ═══════════════════════════════════════════════════════════
+     MODERN PACKAGES PAGE - Enhanced UI/UX Design
+     ═══════════════════════════════════════════════════════════ */
+
+  /* ── CSS Variables ── */
+  :root {
+    --pkg-primary: #2563eb;
+    --pkg-primary-dark: #1d4ed8;
+    --pkg-primary-light: #3b82f6;
+    --pkg-bg-dark: #0f172a;
+    --pkg-text-dark: #0f172a;
+    --pkg-text-muted: #64748b;
+    --pkg-text-light: #94a3b8;
+    --pkg-border: #e2e8f0;
+    --pkg-bg-light: #f8fafc;
+    --pkg-radius-sm: 8px;
+    --pkg-radius-md: 12px;
+    --pkg-radius-lg: 16px;
+    --pkg-radius-xl: 20px;
+    --pkg-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+    --pkg-shadow-md: 0 4px 16px rgba(0, 0, 0, 0.06);
+    --pkg-shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.1);
+    --pkg-shadow-xl: 0 12px 48px rgba(37, 99, 235, 0.12);
+    --pkg-transition: all 0.3s ease;
+  }
+
+  /* ── Booking Limit Banner ── */
+  .pkg-limit-banner {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    border-radius: var(--pkg-radius-lg);
+    padding: 1.25rem 1.5rem;
+    margin: 0 auto 1.75rem;
+    max-width: 900px;
+    box-shadow: var(--pkg-shadow-sm);
+  }
+  .pkg-limit-banner--closed {
+    background: linear-gradient(135deg, #fef2f2, #fee2e2);
+    border: 1px solid #fecaca;
+  }
+  .pkg-limit-banner--full {
+    background: linear-gradient(135deg, #fffbeb, #fef3c7);
+    border: 1px solid #fde68a;
+  }
+  .pkg-limit-icon { font-size: 1.3rem; flex-shrink: 0; margin-top: 0.1rem; }
+  .pkg-limit-text { font-size: 0.9rem; line-height: 1.7; }
+  .pkg-limit-banner--closed .pkg-limit-text { color: #7f1d1d; }
+  .pkg-limit-banner--full   .pkg-limit-text { color: #78350f; }
+  .pkg-limit-text strong { font-weight: 700; }
+
+  /* ── Disabled card state (bookings fully off) ── */
+  .pkg-card--disabled {
+    opacity: 0.6;
+    pointer-events: none;
+    filter: grayscale(30%);
+  }
+  .pkg-details-btn--disabled {
+    background: #94a3b8 !important;
+    box-shadow: none !important;
+    cursor: not-allowed !important;
+    transform: none !important;
+  }
+
+  /* ── Modal full-day note ── */
+  .pkg-modal-full-note {
+    margin-top: 0.6rem;
+    padding: 0.65rem 0.9rem;
+    background: #fffbeb;
+    border: 1px solid #fde68a;
+    border-radius: 8px;
+    font-size: 0.82rem;
+    color: #92400e;
+    line-height: 1.5;
+  }
+
+  /* ── Page Hero ── */
+  .pkg-hero {
+    text-align: center;
+    padding: 5rem 2rem 2.5rem;
+    max-width: 700px;
+    margin: 0 auto;
+  }
+
+  .pkg-eyebrow {
+    display: inline-block;
+    background: linear-gradient(135deg, #dbeafe, #e0e7ff);
+    color: #2563eb;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    padding: 0.4rem 1rem;
+    border-radius: 50px;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.1);
+  }
+
+  .pkg-hero-title {
+    font-family: 'Poppins', sans-serif;
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 900;
+    color: #0f172a;
+    margin: 0 0 1rem;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+  }
+
+  .pkg-hero-title em {
+    font-style: italic;
+    font-family: 'Playfair Display', serif;
+    color: #2563eb;
+  }
+
+  .pkg-hero-sub {
+    color: #64748b;
+    font-size: 1.05rem;
+    line-height: 1.8;
+    margin: 0;
+    max-width: 560px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* ── Notice Banner ── */
+  .pkg-notice {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    background: linear-gradient(135deg, #fffbeb, #fef3c7);
+    border: 1px solid #fde68a;
+    border-radius: var(--pkg-radius-lg);
+    padding: 1.25rem 1.5rem;
+    margin: 0 2rem 3rem;
+    max-width: 900px;
+    margin-left: auto;
+    margin-right: auto;
+    box-shadow: var(--pkg-shadow-sm);
+  }
+
+  .pkg-notice-icon {
+    font-size: 1.3rem;
+    flex-shrink: 0;
+    margin-top: 0.1rem;
+  }
+
+  .pkg-notice-text {
+    font-size: 0.9rem;
+    color: #78350f;
+    line-height: 1.7;
+  }
+
+  .pkg-notice-text strong {
+    color: #92400e;
+    font-weight: 700;
+  }
+
+  .pkg-notice-text a {
+    color: #2563eb;
+    font-weight: 600;
+    text-decoration: none;
+    transition: var(--pkg-transition);
+  }
+
+  .pkg-notice-text a:hover {
+    text-decoration: underline;
+    color: #1d4ed8;
+  }
+
+  /* ── Package Grid ── */
+  .pkg-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.75rem;
+    max-width: 1200px;
+    margin: 0 auto 5rem;
+    padding: 0 2rem;
+  }
+
+  /* ── Package Card ── */
+  .pkg-card {
+    background: #fff;
+    border: 1px solid var(--pkg-border);
+    border-radius: var(--pkg-radius-xl);
+    overflow: hidden;
+    box-shadow: var(--pkg-shadow-sm);
+    transition: var(--pkg-transition);
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .pkg-card:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--pkg-shadow-xl);
+    border-color: #bfdbfe;
+  }
+
+  .pkg-card-img {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 4/3;
+    overflow: hidden;
+    background: var(--pkg-bg-light);
+  }
+
+  .pkg-card-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+    display: block;
+  }
+
+  .pkg-card:hover .pkg-card-img img {
+    transform: scale(1.08);
+  }
+
+  .pkg-card-img-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #dbeafe, #ede9fe);
+    font-size: 3.5rem;
+  }
+
+  .pkg-card-body {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    flex: 1;
+  }
+
+  .pkg-card-name {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: #0f172a;
+    margin: 0;
+    line-height: 1.3;
+    letter-spacing: -0.01em;
+  }
+
+  .pkg-card-meta {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .pkg-meta-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.8rem;
+    color: #475569;
+    background: var(--pkg-bg-light);
+    border: 1px solid var(--pkg-border);
+    padding: 0.3rem 0.65rem;
+    border-radius: var(--pkg-radius-sm);
+    font-weight: 500;
+  }
+
+  .pkg-meta-icon {
+    font-size: 0.9rem;
+  }
+
+  .pkg-card-price {
+    display: flex;
+    align-items: baseline;
+    gap: 0.35rem;
+    margin-top: 0.25rem;
+  }
+
+  .pkg-price-amount {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.75rem;
+    font-weight: 900;
+    color: #2563eb;
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+
+  .pkg-price-label {
+    font-size: 0.82rem;
+    color: var(--pkg-text-light);
+    font-weight: 500;
+  }
+
+  .pkg-details-btn {
+    margin-top: auto;
+    width: 100%;
+    padding: 0.8rem 1.25rem;
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    color: #fff;
+    border: none;
+    border-radius: var(--pkg-radius-md);
+    font-size: 0.9rem;
+    font-weight: 700;
+    font-family: 'Poppins', sans-serif;
+    cursor: pointer;
+    transition: var(--pkg-transition);
+    box-shadow: 0 4px 16px rgba(37, 99, 235, 0.3);
+  }
+
+  .pkg-details-btn:hover {
+    background: linear-gradient(135deg, #1d4ed8, #1e40af);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 24px rgba(37, 99, 235, 0.4);
+  }
+
+  .pkg-details-btn:active {
+    transform: translateY(0);
+  }
+
+  /* Empty State */
+  .pkg-empty {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 5rem 0;
+    color: var(--pkg-text-light);
+    font-size: 1rem;
+  }
+
+  .pkg-empty-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+  }
+
+  /* ── Modal ── */
+  .pkg-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+    animation: pkgFadeIn 0.25s ease;
+  }
+
+  .pkg-modal.hidden {
+    display: none;
+  }
+
+  .pkg-modal-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(5, 8, 20, 0.88);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+  }
+
+  .pkg-modal-box {
+    position: relative;
+    z-index: 1;
+    background: #fff;
+    border-radius: var(--pkg-radius-xl);
+    overflow: hidden;
+    max-width: 900px;
+    width: 100%;
+    box-shadow: 0 32px 80px rgba(0, 0, 0, 0.4);
+    animation: pkgSlideUp 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .pkg-modal-close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    z-index: 10;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    color: #475569;
+    font-size: 1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--pkg-transition);
+    line-height: 1;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .pkg-modal-close:hover {
+    background: #fff;
+    transform: scale(1.1);
+    color: #0f172a;
+  }
+
+  .pkg-modal-inner {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .pkg-modal-img-col {
+    position: relative;
+    background: var(--pkg-bg-light);
+    min-height: 400px;
+  }
+
+  .pkg-modal-img-col img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .pkg-modal-img-placeholder {
+    width: 100%;
+    height: 100%;
+    min-height: 400px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #dbeafe, #ede9fe);
+    font-size: 5rem;
+  }
+
+  .pkg-modal-img-placeholder.hidden {
+    display: none;
+  }
+
+  .pkg-modal-detail-col {
+    padding: 2.5rem 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    overflow-y: auto;
+    max-height: 90vh;
+  }
+
+  .pkg-modal-desc {
+    font-size: 0.92rem;
+    color: #475569;
+    line-height: 1.8;
+    flex: 1;
+    overflow-y: auto;
+    margin-bottom: 0.5rem;
+  }
+
+  .pkg-modal-desc ul {
+    padding-left: 1.25rem;
+    margin: 0;
+  }
+
+  .pkg-modal-desc ul li {
+    margin-bottom: 0.5rem;
+    padding-left: 0.25rem;
+  }
+
+  .pkg-modal-desc ul li::marker {
+    color: #2563eb;
+  }
+
+  .pkg-book-btn {
+    display: block;
+    text-align: center;
+    padding: 1rem 1.75rem;
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    color: #fff;
+    border-radius: var(--pkg-radius-md);
+    font-weight: 700;
+    font-size: 1rem;
+    font-family: 'Poppins', sans-serif;
+    text-decoration: none;
+    transition: var(--pkg-transition);
+    box-shadow: 0 4px 20px rgba(37, 99, 235, 0.35);
+    margin-top: auto;
+    flex-shrink: 0;
+  }
+
+  .pkg-book-btn:hover {
+    background: linear-gradient(135deg, #1d4ed8, #1e40af);
+    transform: translateY(-2px);
+    color: #fff;
+    box-shadow: 0 6px 28px rgba(37, 99, 235, 0.45);
+  }
+
+  .pkg-modal-detail-col h2 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: #0f172a;
+    margin: 0;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+  }
+
+  .pkg-modal-meta-row {
+    display: flex;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+  }
+
+  .pkg-modal-meta-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.85rem;
+    color: #475569;
+    background: var(--pkg-bg-light);
+    border: 1px solid var(--pkg-border);
+    padding: 0.4rem 0.8rem;
+    border-radius: var(--pkg-radius-sm);
+    font-weight: 500;
+  }
+
+  .pkg-modal-price-row {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    margin-top: auto;
+    margin-bottom: 0;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--pkg-border);
+  }
+
+  .pkg-modal-price {
+    font-family: 'Poppins', sans-serif;
+    font-size: 2.25rem;
+    font-weight: 900;
+    color: #2563eb;
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+
+  .pkg-modal-price-label {
+    font-size: 0.88rem;
+    color: var(--pkg-text-light);
+    font-weight: 500;
+  }
+
+  /* Animations */
+  @keyframes pkgFadeIn {
+    from { opacity: 0 }
+    to { opacity: 1 }
+  }
+
+  @keyframes pkgSlideUp {
+    from { opacity: 0; transform: scale(0.93) translateY(24px) }
+    to { opacity: 1; transform: scale(1) translateY(0) }
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 768px) {
+    .pkg-hero {
+      padding: 4rem 1.5rem 2rem;
+    }
+
+    .pkg-hero-title {
+      font-size: 1.8rem;
+    }
+
+    .pkg-hero-sub {
+      font-size: 0.95rem;
+    }
+
+    .pkg-notice {
+      margin: 0 1.5rem 2.5rem;
+      padding: 1rem 1.25rem;
+    }
+
+    .pkg-grid {
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 1.25rem;
+      padding: 0 1.5rem;
+      margin-bottom: 4rem;
+    }
+
+    .pkg-card-body {
+      padding: 1.25rem;
+    }
+
+    .pkg-card-name {
+      font-size: 1rem;
+    }
+
+    .pkg-price-amount {
+      font-size: 1.5rem;
+    }
+
+    .pkg-modal {
+      padding: 1rem;
+    }
+
+    .pkg-modal-box {
+      max-height: 95vh;
+      overflow-y: auto;
+    }
+
+    .pkg-modal-inner {
+      grid-template-columns: 1fr;
+    }
+
+    .pkg-modal-img-col {
+      min-height: 280px;
+      max-height: 280px;
+    }
+
+    .pkg-modal-img-col img {
+      height: 280px;
+      object-fit: cover;
+    }
+
+    .pkg-modal-img-placeholder {
+      min-height: 280px;
+      max-height: 280px;
+    }
+
+    .pkg-modal-detail-col {
+      padding: 1.5rem;
+      gap: 1rem;
+      max-height: none;
+      overflow-y: visible;
+    }
+
+    .pkg-modal-detail-col h2 {
+      font-size: 1.3rem;
+    }
+
+    .pkg-modal-meta-chip {
+      font-size: 0.78rem;
+      padding: 0.3rem 0.65rem;
+    }
+
+    .pkg-modal-desc {
+      font-size: 0.85rem;
+      line-height: 1.7;
+      max-height: 120px;
+      overflow-y: auto;
+      margin-bottom: 0.5rem;
+    }
+
+    .pkg-modal-price {
+      font-size: 1.75rem;
+    }
+
+    .pkg-book-btn {
+      padding: 0.85rem 1.5rem;
+      font-size: 0.92rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .pkg-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .pkg-notice {
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .pkg-hero-title {
+      font-size: 1.6rem;
+    }
+  }
+</style>
+{% endblock %}

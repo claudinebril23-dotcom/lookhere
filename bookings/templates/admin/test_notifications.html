@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Notification Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        button { padding: 10px 20px; margin: 10px; font-size: 16px; }
+        #log { margin-top: 20px; padding: 10px; background: #f5f5f5; border-radius: 5px; }
+        .log-item { padding: 5px; margin: 5px 0; border-left: 3px solid #333; padding-left: 10px; }
+    </style>
+</head>
+<body>
+    <h1>Notification System Test</h1>
+    
+    <button onclick="testAddNotification()">Add Test Notification</button>
+    <button onclick="testSessionStorage()">Test SessionStorage</button>
+    <button onclick="checkElements()">Check DOM Elements</button>
+    
+    <div id="log"></div>
+
+    <script>
+        function log(message) {
+            const logDiv = document.getElementById('log');
+            const item = document.createElement('div');
+            item.className = 'log-item';
+            item.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            logDiv.insertBefore(item, logDiv.firstChild);
+            console.log(message);
+        }
+
+        function testAddNotification() {
+            log('Testing addToNotificationBell function...');
+            
+            // Simulate what happens when you save a model
+            const message = 'Test package was saved successfully';
+            const type = 'success';
+            const title = '📦 Package Saved Successfully';
+            
+            log(`Message: ${message}`);
+            log(`Type: ${type}`);
+            log(`Title: ${title}`);
+            
+            // Check if function exists
+            if (typeof addToNotificationBell === 'function') {
+                log('✅ addToNotificationBell function exists');
+                try {
+                    addToNotificationBell(message, type, title);
+                    log('✅ Function called successfully');
+                } catch (e) {
+                    log(`❌ Error calling function: ${e.message}`);
+                }
+            } else {
+                log('❌ addToNotificationBell function NOT found');
+            }
+        }
+
+        function testSessionStorage() {
+            log('Testing SessionStorage...');
+            
+            // Simulate save action
+            sessionStorage.setItem('adminSaveAction', 'true');
+            sessionStorage.setItem('adminSaveModel', 'Package');
+            
+            log(`✅ Set adminSaveAction: ${sessionStorage.getItem('adminSaveAction')}`);
+            log(`✅ Set adminSaveModel: ${sessionStorage.getItem('adminSaveModel')}`);
+            
+            // Check if it persists
+            setTimeout(() => {
+                log(`After 1s - adminSaveAction: ${sessionStorage.getItem('adminSaveAction')}`);
+                log(`After 1s - adminSaveModel: ${sessionStorage.getItem('adminSaveModel')}`);
+            }, 1000);
+        }
+
+        function checkElements() {
+            log('Checking DOM elements...');
+            
+            const list = document.getElementById('notif-panel-list');
+            const badge = document.querySelector('.notification-badge');
+            const countEl = document.getElementById('notif-unread-count');
+            
+            log(`notif-panel-list: ${list ? '✅ Found' : '❌ Not found'}`);
+            log(`notification-badge: ${badge ? '✅ Found' : '❌ Not found'}`);
+            log(`notif-unread-count: ${countEl ? '✅ Found' : '❌ Not found'}`);
+            
+            if (list) {
+                log(`List children count: ${list.children.length}`);
+                log(`List innerHTML length: ${list.innerHTML.length}`);
+            }
+        }
+
+        // Log page load
+        log('Page loaded');
+        log(`Current path: ${window.location.pathname}`);
+    </script>
+</body>
+</html>

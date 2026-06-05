@@ -1,0 +1,20 @@
+{
+    "reportMissingModuleSource": false,
+    "reportMissingImports": "warning",
+    "pythonVersion": "3.8",
+    "pythonPlatform": "Windows",
+    "typeCheckingMode": "basic",
+    "useLibraryCodeForTypes": true,
+    "autoSearchPaths": true,
+    "include": [
+        "**/*.py"
+    ],
+    "exclude": [
+        "**/node_modules",
+        "**/__pycache__",
+        "**/staticfiles",
+        "**/media",
+        "**/venv",
+        "**/env"
+    ]
+}

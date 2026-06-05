@@ -1,0 +1,865 @@
+﻿{% extends "admin/base_site.html" %}
+{% load i18n static %}
+
+{% block extrastyle %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'bookings/css/premium_dashboard.css' %}">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+  .breadcrumbs { display: none !important; }
+  body.dashboard .breadcrumbs, .dashboard .breadcrumbs {
+    display: none !important; visibility: hidden !important;
+    height: 0 !important; margin: 0 !important; padding: 0 !important;
+    position: absolute !important; left: -9999px !important;
+  }
+  #content::before {
+    content: '' !important; display: block !important; position: fixed !important;
+    top: var(--header-height) !important; left: 0 !important; right: 0 !important;
+    height: 50px !important; background: var(--bg-page) !important;
+    z-index: 50 !important; pointer-events: none !important;
+  }
+  #content {
+    margin-top: var(--header-height) !important; padding: 0 !important;
+    width: 100% !important; max-width: 100% !important;
+    margin-left: 0 !important; margin-right: 0 !important; position: relative !important;
+  }
+  .dashboard-container {
+    width: 100% !important; max-width: 100% !important;
+    margin: 0 !important; padding: 0 !important;
+    position: relative !important; z-index: 100 !important;
+  }
+
+  /* ── Force table row visibility ── */
+  .dashboard-section table,
+  .dashboard-section table tbody,
+  .dashboard-section table thead { background: transparent !important; }
+  .dashboard-section table tr,
+  .dashboard-section table tbody tr { background: transparent !important; }
+  .dashboard-section table tbody td {
+    background: transparent !important; color: var(--text-primary) !important;
+    border-bottom: 1px solid var(--border-color) !important;
+  }
+  .dashboard-section table thead th {
+    background: var(--bg-secondary) !important; color: var(--text-muted) !important;
+    border-bottom: 1px solid var(--border-color) !important;
+  }
+  .dashboard-section table tbody tr:hover td { background: var(--bg-hover) !important; }
+  .dashboard-section table tbody tr:nth-child(even) td { background: rgba(0,0,0,0.02) !important; }
+  [data-theme="dark"] .dashboard-section table tbody tr:nth-child(even) td { background: rgba(255,255,255,0.03) !important; }
+  [data-theme="dark"] .dashboard-section table tbody td { color: #e2e8f0 !important; border-bottom-color: rgba(255,255,255,0.07) !important; }
+  [data-theme="dark"] .dashboard-section table thead th { color: #94a3b8 !important; background: rgba(255,255,255,0.04) !important; }
+
+  /* ── Performance Tabs ── */
+  .perf-tabs-wrap {
+    background: var(--bg-card-solid);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-md);
+    margin-bottom: 28px;
+    padding: 0 32px;
+    overflow: hidden;
+  }
+  .perf-tab-nav {
+    display: flex;
+    gap: 0;
+    border-bottom: 1px solid var(--border-color);
+    padding: 0;
+  }
+  .perf-tab-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 16px 24px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-muted);
+    background: transparent;
+    border: none;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -1px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+  }
+  .perf-tab-btn:hover { color: var(--text-primary); }
+  .perf-tab-btn.active {
+    color: var(--primary);
+    border-bottom-color: var(--primary);
+  }
+  .perf-tab-btn .tab-icon {
+    width: 28px; height: 28px;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px;
+    background: rgba(99,102,241,0.08);
+  }
+  .perf-tab-btn.active .tab-icon { background: rgba(99,102,241,0.15); }
+  .perf-tab-panel { display: none; padding: 0; }
+  .perf-tab-panel.active { display: block; }
+
+  /* ── Daily Performance header badges ── */
+  .daily-perf-header {
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 14px; padding: 20px 0;
+    border-bottom: 1px solid var(--border-color);
+  }
+  .daily-perf-header .section-title { margin-bottom: 0; flex-shrink: 0; }
+  .daily-perf-today-badges { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .daily-badge {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 8px 18px; border-radius: 10px; gap: 3px; min-width: 76px;
+  }
+  .daily-badge-label {
+    font-size: 10px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.07em; opacity: 0.72; white-space: nowrap;
+  }
+  .daily-badge-value { font-size: 20px; font-weight: 800; line-height: 1.15; letter-spacing: -0.02em; white-space: nowrap; }
+  .badge-total   { background: rgba(99,102,241,0.10); color: #6366f1; border: 1px solid rgba(99,102,241,0.2); }
+  .badge-paid    { background: rgba(16,185,129,0.10); color: #059669; border: 1px solid rgba(16,185,129,0.2); }
+  .badge-confirmed { background: rgba(59,130,246,0.10); color: #2563eb; border: 1px solid rgba(59,130,246,0.2); }
+  .badge-revenue { background: rgba(245,158,11,0.10); color: #d97706; border: 1px solid rgba(245,158,11,0.2); }
+  [data-theme="dark"] .badge-total    { background: rgba(99,102,241,0.18); color: #818cf8; border-color: rgba(99,102,241,0.3); }
+  [data-theme="dark"] .badge-paid     { background: rgba(16,185,129,0.18); color: #34d399; border-color: rgba(16,185,129,0.3); }
+  [data-theme="dark"] .badge-confirmed { background: rgba(59,130,246,0.18); color: #60a5fa; border-color: rgba(59,130,246,0.3); }
+  [data-theme="dark"] .badge-revenue  { background: rgba(245,158,11,0.18); color: #fcd34d; border-color: rgba(245,158,11,0.3); }
+
+  /* ── Daily chart ── */
+  .daily-chart-wrap {
+    padding: 20px 0;
+    border-bottom: 1px solid var(--border-color);
+    height: 240px; position: relative;
+  }
+  .daily-chart-wrap canvas { background: transparent !important; }
+
+  /* ── Weekly / Monthly inside tabs ── */
+  .perf-table-wrap { padding: 20px 0; overflow-x: auto; }
+  .perf-section-title {
+    font-size: 13px; font-weight: 700; color: var(--text-muted);
+    text-transform: uppercase; letter-spacing: 0.06em;
+    margin-bottom: 14px;
+  }
+
+  /* ── Shared table alignment for all three panels ── */
+  .perf-tab-panel table {
+    width: 100%;
+    table-layout: fixed;
+    border-collapse: collapse;
+  }
+
+  /* Daily: 6 columns  — Date | Total | Paid | Confirmed | Cancelled | Revenue */
+  #tab-daily table colgroup col:nth-child(1) { width: 22%; }
+  #tab-daily table colgroup col:nth-child(2) { width: 13%; }
+  #tab-daily table colgroup col:nth-child(3) { width: 13%; }
+  #tab-daily table colgroup col:nth-child(4) { width: 16%; }
+  #tab-daily table colgroup col:nth-child(5) { width: 16%; }
+  #tab-daily table colgroup col:nth-child(6) { width: 20%; }
+
+  /* Weekly: 4 columns — Week | Total | Paid | Revenue */
+  #tab-weekly table colgroup col:nth-child(1) { width: 34%; }
+  #tab-weekly table colgroup col:nth-child(2) { width: 18%; }
+  #tab-weekly table colgroup col:nth-child(3) { width: 18%; }
+  #tab-weekly table colgroup col:nth-child(4) { width: 30%; }
+
+  /* Monthly: 4 columns — Month | Total | Paid | Revenue */
+  #tab-monthly table colgroup col:nth-child(1) { width: 34%; }
+  #tab-monthly table colgroup col:nth-child(2) { width: 18%; }
+  #tab-monthly table colgroup col:nth-child(3) { width: 18%; }
+  #tab-monthly table colgroup col:nth-child(4) { width: 30%; }
+
+  /* th / td base alignment (desktop) */
+  .perf-tab-panel table th,
+  .perf-tab-panel table td {
+    padding: 13px 16px;
+    font-size: 14px;
+    vertical-align: middle;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .perf-tab-panel table th {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-muted) !important;
+    background: var(--bg-secondary) !important;
+    border-bottom: 1px solid var(--border-color) !important;
+  }
+
+  .perf-tab-panel table td {
+    color: var(--text-primary) !important;
+    border-bottom: 1px solid var(--border-color) !important;
+    background: transparent !important;
+  }
+
+  .perf-tab-panel table tbody tr:hover td { background: var(--bg-hover) !important; }
+  .perf-tab-panel table tbody tr:last-child td { border-bottom: none !important; }
+
+  [data-theme="dark"] .perf-tab-panel table th {
+    color: #94a3b8 !important;
+    background: rgba(255,255,255,0.04) !important;
+    border-bottom-color: rgba(255,255,255,0.07) !important;
+  }
+  [data-theme="dark"] .perf-tab-panel table td {
+    color: #e2e8f0 !important;
+    border-bottom-color: rgba(255,255,255,0.07) !important;
+  }
+
+  /* ── Print styles ── */
+  .perf-print-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-muted);
+    background: var(--bg-secondary);
+    border: 1.5px solid var(--border-color);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.18s ease;
+    white-space: nowrap;
+    margin-left: auto;
+  }
+  .perf-print-btn:hover {
+    color: var(--primary);
+    border-color: var(--primary);
+    background: rgba(99,102,241,0.07);
+  }
+  .perf-panel-toolbar {
+    display: flex;
+    align-items: center;
+    padding: 16px 0 0 0;
+    gap: 12px;
+  }
+  .perf-panel-toolbar .section-title { margin-bottom: 0; flex: 1; }
+
+  /* tfoot total row */
+  .perf-tab-panel table tfoot tr td {
+    font-weight: 800 !important;
+    font-size: 14px !important;
+    border-top: 2px solid var(--border-color) !important;
+    border-bottom: none !important;
+    background: var(--bg-secondary) !important;
+    padding: 12px 16px !important;
+  }
+  [data-theme="dark"] .perf-tab-panel table tfoot tr td {
+    background: rgba(255,255,255,0.04) !important;
+    border-top-color: rgba(255,255,255,0.12) !important;
+  }
+
+  @media (max-width: 768px) {
+    .perf-tabs-wrap { padding: 0 16px; margin-bottom: 20px; }
+    .perf-tab-btn { padding: 12px 14px; font-size: 12px; }
+    .daily-perf-header { flex-direction: column; align-items: flex-start; padding: 14px 0; }
+    .daily-badge { min-width: 60px; padding: 6px 12px; }
+    .daily-badge-value { font-size: 17px; }
+    .daily-chart-wrap { height: 190px; }
+  }
+  @media (max-width: 480px) {
+    .perf-tab-btn .tab-icon { display: none; }
+    .perf-tab-btn { padding: 10px 12px; font-size: 11px; }
+  }
+
+  /* ── Utility classes replacing inline styles ── */
+  .u-mb0        { margin-bottom: 0; }
+  .u-fs13       { font-size: 13px; }
+  .u-fw600      { font-weight: 600; }
+  .u-fw700      { font-weight: 700; }
+  .u-fw800      { font-weight: 800; }
+  .u-fs12       { font-size: 12px; }
+  .u-nowrap     { white-space: nowrap; }
+  .u-tc         { text-align: center; }
+  .u-tr         { text-align: right; }
+  .u-color-success { color: var(--success); }
+  .u-color-blue    { color: #3b82f6; }
+  .u-color-danger  { color: var(--danger); }
+  .u-color-muted   { color: var(--text-muted); }
+  .u-p40-tc     { padding: 40px; text-align: center; color: var(--text-muted); }
+  .u-p32-tc     { padding: 32px; text-align: center; color: var(--text-muted); }
+  .u-overflow-x-auto { overflow-x: auto; }
+  .u-table-auto  { min-width: 100%; table-layout: auto; width: 100%; }
+  .u-pkg-revenue { color: var(--success); }
+
+  /* Daily panel header title sub-label */
+  .daily-perf-sublabel { font-size: 12px; font-weight: 500; color: var(--text-muted); }
+
+  /* Revenue summary strong highlight */
+  .revenue-summary-strong { color: var(--success); }
+
+  /* Top Clients table wrapper */
+  .top-clients-wrap { overflow-x: auto; }
+
+  @media (max-width: 600px) {
+    .perf-tabs-wrap { padding: 0 12px; }
+
+    .perf-tab-panel table,
+    .perf-tab-panel table thead,
+    .perf-tab-panel table tbody,
+    .perf-tab-panel table tr,
+    .perf-tab-panel table th,
+    .perf-tab-panel table td { display: block; width: 100%; }
+
+    /* Hide header row — labels come from data-label */
+    .perf-tab-panel table thead tr { display: none; }
+
+    .perf-tab-panel table tbody tr {
+      margin-bottom: 10px;
+      border: 1px solid var(--border-color) !important;
+      border-radius: 10px;
+      padding: 8px 12px;
+      background: var(--bg-secondary) !important;
+      overflow: hidden;
+    }
+
+    .perf-tab-panel table td {
+      display: flex !important;
+      justify-content: space-between;
+      align-items: center;
+      padding: 7px 4px !important;
+      border-bottom: 1px solid var(--border-light) !important;
+      border-radius: 0 !important;
+      text-align: right !important;
+      white-space: normal;
+      overflow: visible;
+      text-overflow: unset;
+    }
+
+    .perf-tab-panel table td:last-child { border-bottom: none !important; }
+
+    .perf-tab-panel table td::before {
+      content: attr(data-label);
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      text-align: left;
+      flex-shrink: 0;
+      margin-right: 8px;
+    }
+
+    /* Reset column widths on mobile (block layout ignores them) */
+    #tab-daily table colgroup,
+    #tab-weekly table colgroup,
+    #tab-monthly table colgroup { display: none; }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+
+  <!-- Page Title -->
+  <h1 class="dashboard-page-title">
+    <span class="title-icon">📊</span>
+    <span>Dashboard Overview</span>
+  </h1>
+
+  <!-- Stats Grid -->
+  <div class="stats-grid">
+    <div class="stat-card card-purple">
+      <div class="stat-header"><div class="stat-icon">📅</div></div>
+      <div class="stat-label">Total Bookings</div>
+      <div class="stat-value">{{ total_bookings|default:"0" }}</div>
+      <div class="stat-change">All time bookings</div>
+    </div>
+    <div class="stat-card card-green">
+      <div class="stat-header"><div class="stat-icon">✅</div></div>
+      <div class="stat-label">Paid Bookings</div>
+      <div class="stat-value">{{ paid_bookings|default:"0" }}</div>
+      <div class="stat-change">Confirmed sessions</div>
+    </div>
+    <div class="stat-card card-blue">
+      <div class="stat-header"><div class="stat-icon">💰</div></div>
+      <div class="stat-label">Total Revenue</div>
+      <div class="stat-value">₱{{ total_revenue|default:"0"|floatformat:0 }}</div>
+      <div class="stat-change">From paid bookings</div>
+    </div>
+    <div class="stat-card card-indigo">
+      <div class="stat-header"><div class="stat-icon">📈</div></div>
+      <div class="stat-label">This Month</div>
+      <div class="stat-value">{{ monthly_bookings|default:"0" }}</div>
+      <div class="stat-change">₱{{ monthly_revenue|default:"0"|floatformat:0 }} revenue</div>
+    </div>
+    <div class="stat-card card-orange">
+      <div class="stat-header"><div class="stat-icon">📦</div></div>
+      <div class="stat-label">Packages</div>
+      <div class="stat-value">{{ total_packages|default:"0" }}</div>
+      <div class="stat-change">Available packages</div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       PERFORMANCE TABS  (Daily / Weekly / Monthly)
+       ══════════════════════════════════════════ -->
+  <div class="perf-tabs-wrap">
+    <nav class="perf-tab-nav" role="tablist">
+      <button class="perf-tab-btn active" role="tab" data-tab="daily">
+        <span class="tab-icon">🗓️</span>Daily
+      </button>
+      <button class="perf-tab-btn" role="tab" data-tab="weekly">
+        <span class="tab-icon">📅</span>Weekly
+      </button>
+      <button class="perf-tab-btn" role="tab" data-tab="monthly">
+        <span class="tab-icon">📆</span>Monthly
+      </button>
+    </nav>
+
+    <!-- ── Daily Panel ── -->
+    <div class="perf-tab-panel active" id="tab-daily">
+      <div class="daily-perf-header">
+        <div class="section-title u-mb0">
+          <span class="section-icon">🗓️</span>
+          <span>Daily Performance <span class="daily-perf-sublabel">(Last 14 Days)</span></span>
+        </div>
+        <div class="daily-perf-today-badges">
+          <span class="daily-badge badge-total">
+            <span class="daily-badge-label">Today</span>
+            <span class="daily-badge-value">{{ today_bookings }}</span>
+          </span>
+          <span class="daily-badge badge-paid">
+            <span class="daily-badge-label">Paid</span>
+            <span class="daily-badge-value">{{ today_paid }}</span>
+          </span>
+          <span class="daily-badge badge-confirmed">
+            <span class="daily-badge-label">Confirmed</span>
+            <span class="daily-badge-value">{{ today_confirmed }}</span>
+          </span>
+          <span class="daily-badge badge-revenue">
+            <span class="daily-badge-label">Revenue</span>
+            <span class="daily-badge-value">₱{{ today_revenue|floatformat:0 }}</span>
+          </span>
+        </div>
+      </div>
+      <div class="daily-chart-wrap">
+        <canvas id="dailyPerfChart"></canvas>
+      </div>
+      <div class="perf-panel-toolbar">
+        <div class="section-title u-mb0 u-fs13">Revenue Summary — Last 14 Days: <strong class="revenue-summary-strong">₱{{ daily_revenue_total|floatformat:0 }}</strong></div>
+        <button class="perf-print-btn" onclick="perfPrint('daily')">🖨️ Print</button>
+      </div>
+      <div class="perf-table-wrap">
+        <table>
+          <colgroup>
+            <col><col><col><col><col><col>
+          </colgroup>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th class="u-tc">Total</th>
+              <th class="u-tc">Paid</th>
+              <th class="u-tc">Confirmed</th>
+              <th class="u-tc">Cancelled</th>
+              <th class="u-tr">Revenue</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for day in daily_report %}
+            <tr>
+              <td data-label="Date" class="u-fw600 u-nowrap">{{ day.day|date:"M d, Y" }}</td>
+              <td data-label="Total" class="u-tc u-fw700">{{ day.total_bookings }}</td>
+              <td data-label="Paid" class="u-tc u-fw700 u-color-success">{{ day.paid_bookings }}</td>
+              <td data-label="Confirmed" class="u-tc u-fw700 u-color-blue">{{ day.confirmed_bookings }}</td>
+              <td data-label="Cancelled" class="u-tc u-fw700 u-color-danger">{{ day.cancelled_bookings }}</td>
+              <td data-label="Revenue" class="u-tr u-fw700 u-color-success u-nowrap">₱{{ day.revenue|default:0|floatformat:0 }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="6" class="u-p40-tc">No bookings in the last 14 days</td></tr>
+            {% endfor %}
+          </tbody>
+          <tfoot>
+            <tr>
+              <td class="u-fw800">Total (14 Days)</td>
+              <td class="u-tc"></td>
+              <td class="u-tc"></td>
+              <td class="u-tc"></td>
+              <td class="u-tc"></td>
+              <td class="u-tr u-color-success">₱{{ daily_revenue_total|floatformat:0 }}</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+
+    <!-- ── Weekly Panel ── -->
+    <div class="perf-tab-panel" id="tab-weekly">
+      <div class="perf-panel-toolbar">
+        <div class="section-title u-mb0 u-fs13">Revenue Summary — Last 8 Weeks: <strong class="revenue-summary-strong">₱{{ weekly_revenue_total|floatformat:0 }}</strong></div>
+        <button class="perf-print-btn" onclick="perfPrint('weekly')">🖨️ Print</button>
+      </div>
+      <div class="perf-table-wrap">
+        <table>
+          <colgroup>
+            <col><col><col><col>
+          </colgroup>
+          <thead>
+            <tr>
+              <th>Week Starting</th>
+              <th class="u-tc">Total</th>
+              <th class="u-tc">Paid</th>
+              <th class="u-tr">Revenue</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for week in weekly_report %}
+            <tr>
+              <td data-label="Week" class="u-fw600">{{ week.week|date:"M d, Y" }}</td>
+              <td data-label="Total" class="u-tc u-fw700">{{ week.total_bookings }}</td>
+              <td data-label="Paid" class="u-tc u-fw700 u-color-success">{{ week.paid_bookings }}</td>
+              <td data-label="Revenue" class="u-tr u-fw700 u-color-success">₱{{ week.revenue|default:0|floatformat:0 }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="4" class="u-p32-tc">No weekly data available</td></tr>
+            {% endfor %}
+          </tbody>
+          <tfoot>
+            <tr>
+              <td class="u-fw800">Total (8 Weeks)</td>
+              <td class="u-tc"></td>
+              <td class="u-tc"></td>
+              <td class="u-tr u-color-success">₱{{ weekly_revenue_total|floatformat:0 }}</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+
+    <!-- ── Monthly Panel ── -->
+    <div class="perf-tab-panel" id="tab-monthly">
+      <div class="perf-panel-toolbar">
+        <div class="section-title u-mb0 u-fs13">Revenue Summary — Last 6 Months: <strong class="revenue-summary-strong">₱{{ monthly_revenue_total|floatformat:0 }}</strong></div>
+        <button class="perf-print-btn" onclick="perfPrint('monthly')">🖨️ Print</button>
+      </div>
+      <div class="perf-table-wrap">
+        <table>
+          <colgroup>
+            <col><col><col><col>
+          </colgroup>
+          <thead>
+            <tr>
+              <th>Month</th>
+              <th class="u-tc">Total</th>
+              <th class="u-tc">Paid</th>
+              <th class="u-tr">Revenue</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for month in monthly_report %}
+            <tr>
+              <td data-label="Month" class="u-fw600">{{ month.month|date:"F Y" }}</td>
+              <td data-label="Total" class="u-tc u-fw700">{{ month.total_bookings }}</td>
+              <td data-label="Paid" class="u-tc u-fw700 u-color-success">{{ month.paid_bookings }}</td>
+              <td data-label="Revenue" class="u-tr u-fw700 u-color-success">₱{{ month.revenue|default:0|floatformat:0 }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="4" class="u-p32-tc">No monthly data available</td></tr>
+            {% endfor %}
+          </tbody>
+          <tfoot>
+            <tr>
+              <td class="u-fw800">Total (6 Months)</td>
+              <td class="u-tc"></td>
+              <td class="u-tc"></td>
+              <td class="u-tr u-color-success">₱{{ monthly_revenue_total|floatformat:0 }}</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent Bookings -->
+  <div class="dashboard-section">
+    <div class="section-title">
+      <span class="section-icon">📋</span>
+      <span>Recent Bookings</span>
+    </div>
+    <div class="recent-bookings">
+      {% for booking in recent_bookings|slice:":5" %}
+      <a href="/admin/bookings/booking/{{ booking.id }}/change/" class="booking-item">
+        <div class="booking-info">
+          <div class="booking-name">{{ booking.customer_name }}</div>
+          <div class="booking-details">
+            {{ booking.email }} • {{ booking.phone }}<br>
+            {{ booking.date|date:"M d, Y" }} at {{ booking.time|time:"g:i A" }}
+          </div>
+        </div>
+        <div class="booking-status {% if booking.status == 'confirmed' %}status-confirmed{% elif booking.status == 'paid' %}status-paid{% elif booking.status == 'cancelled' %}status-cancelled{% else %}status-pending{% endif %}">
+          {{ booking.status|upper }}
+        </div>
+      </a>
+      {% empty %}
+      <div class="empty-state">
+        <div class="empty-icon">📭</div>
+        <div class="empty-text">No recent bookings found</div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Top Clients -->
+  <div class="dashboard-section">
+    <div class="section-title">
+      <span class="section-icon">👥</span>
+      <span>Top Clients (Last 30 Days)</span>
+    </div>
+    <div class="top-clients-wrap">
+      <table class="u-table-auto">
+        <thead>
+          <tr>
+            <th>Client Name</th>
+            <th>Contact</th>
+            <th class="u-tc">Bookings</th>
+            <th class="u-tr">Total Spent</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for client in client_bookings %}
+          <tr>
+            <td data-label="Client" class="u-fw600 u-nowrap">{{ client.customer_name }}</td>
+            <td data-label="Contact" class="u-fs12">
+              {{ client.email }}<br>
+              <span class="u-color-muted">{{ client.phone }}</span>
+            </td>
+            <td data-label="Bookings" class="u-tc u-fw700">{{ client.total_bookings }}</td>
+            <td data-label="Total" class="u-tr u-fw700 u-color-success u-nowrap">₱{{ client.total_spent|floatformat:0 }}</td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="4" class="u-p40-tc">No client data available</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Package Performance -->
+  <div class="dashboard-section">
+    <div class="section-title">
+      <span class="section-icon">📦</span>
+      <span>Package Performance</span>
+    </div>
+    <div class="package-list">
+      {% for package in top_packages %}
+      <div class="package-item">
+        <div class="package-name">{{ package.package__name }}</div>
+        <div class="package-stats">
+          <div class="package-stat">
+            <div class="package-stat-label">Bookings</div>
+            <div class="package-stat-value">{{ package.count }}</div>
+          </div>
+          <div class="package-stat">
+            <div class="package-stat-label">Revenue</div>
+            <div class="package-stat-value u-pkg-revenue">₱{{ package.revenue|floatformat:0 }}</div>
+          </div>
+        </div>
+      </div>
+      {% empty %}
+      <div class="empty-state">
+        <div class="empty-icon">📭</div>
+        <div class="empty-text">No package data available</div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+</div>
+
+<script id="daily-trends-data" type="application/json">{{ daily_trends|safe }}</script>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    const colors = {
+      primary: isDark ? '#818cf8' : '#6366f1',
+      primaryLight: isDark ? 'rgba(99,102,241,0.2)' : 'rgba(99,102,241,0.1)',
+      text: isDark ? '#cbd5e1' : '#64748b',
+      grid: isDark ? 'rgba(51,65,85,0.3)' : 'rgba(148,163,184,0.2)',
+      tooltip: isDark ? '#1e293b' : '#ffffff',
+      tooltipBorder: isDark ? '#334155' : '#e2e8f0',
+      success: isDark ? '#34d399' : '#10b981',
+      accent: isDark ? '#a78bfa' : '#8b5cf6'
+    };
+
+    // ── Tab switcher ──────────────────────────────────────────────────────
+    document.querySelectorAll('.perf-tab-btn').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        document.querySelectorAll('.perf-tab-btn').forEach(function (b) { b.classList.remove('active'); });
+        document.querySelectorAll('.perf-tab-panel').forEach(function (p) { p.classList.remove('active'); });
+        btn.classList.add('active');
+        document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+      });
+    });
+
+    // ── Print handler ─────────────────────────────────────────────────────
+    window.perfPrint = function (tab) {
+      var labels = {
+        daily:   'Daily Performance (Last 14 Days)',
+        weekly:  'Weekly Performance (Last 8 Weeks)',
+        monthly: 'Monthly Performance (Last 6 Months)'
+      };
+      var panel = document.getElementById('tab-' + tab);
+      var table = panel ? panel.querySelector('table') : null;
+      if (!table) return;
+
+      var now = new Date().toLocaleDateString('en-PH', {
+        year: 'numeric', month: 'long', day: 'numeric',
+        hour: '2-digit', minute: '2-digit'
+      });
+
+      // Serialize the table rows to plain HTML — strip inline color so print is black
+      var clone = table.cloneNode(true);
+      var cg = clone.querySelector('colgroup');
+      if (cg) cg.remove();
+      clone.querySelectorAll('[style]').forEach(function (el) {
+        el.removeAttribute('style');
+      });
+
+      var win = window.open('', '_blank', 'width=900,height=700');
+      win.document.write(
+        '<!DOCTYPE html><html><head>' +
+        '<meta charset="utf-8">' +
+        '<title>Look Here Studio — ' + labels[tab] + '</title>' +
+        '<style>' +
+        '  body { font-family: Arial, sans-serif; font-size: 13px; margin: 32px; color: #000; }' +
+        '  h2 { font-size: 17px; font-weight: 700; margin: 0 0 4px 0; }' +
+        '  .meta { font-size: 11px; color: #555; margin-bottom: 20px; }' +
+        '  table { width: 100%; border-collapse: collapse; }' +
+        '  th { background: #f0f0f0; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; padding: 9px 12px; border: 1px solid #ccc; text-align: left; }' +
+        '  td { padding: 9px 12px; border: 1px solid #ddd; font-size: 13px; }' +
+        '  tr:nth-child(even) td { background: #fafafa; }' +
+        '  tfoot td { background: #f0f0f0 !important; font-weight: 800; border-top: 2px solid #999; }' +
+        '  .text-center { text-align: center; }' +
+        '  .text-right { text-align: right; }' +
+        '  @media print { body { margin: 20px; } }' +
+        '</style>' +
+        '</head><body>' +
+        '<h2>Look Here Studio — ' + labels[tab] + '</h2>' +
+        '<p class="meta">Printed on: ' + now + '</p>' +
+        clone.outerHTML +
+        '<script>window.onload = function(){ window.print(); window.onafterprint = function(){ window.close(); }; };<\/script>' +
+        '</body></html>'
+      );
+      win.document.close();
+    };
+    const ctxDaily = document.getElementById('dailyPerfChart');
+    if (ctxDaily) {
+      const dailyRaw = JSON.parse(document.getElementById('daily-trends-data').textContent);
+      const dailyLabels  = dailyRaw.map(d => d.date);
+      const dailyCounts  = dailyRaw.map(d => d.count);
+      const dailyRevenue = dailyRaw.map(d => d.revenue);
+
+      new Chart(ctxDaily, {
+        type: 'bar',
+        data: {
+          labels: dailyLabels,
+          datasets: [
+            {
+              label: 'Bookings',
+              data: dailyCounts,
+              backgroundColor: isDark ? 'rgba(99,102,241,0.65)' : 'rgba(99,102,241,0.55)',
+              borderColor: isDark ? '#818cf8' : '#6366f1',
+              borderWidth: 1.5,
+              borderRadius: 5,
+              borderSkipped: false,
+              yAxisID: 'yLeft',
+            },
+            {
+              label: 'Revenue (₱)',
+              data: dailyRevenue,
+              type: 'line',
+              borderColor: isDark ? '#34d399' : '#10b981',
+              backgroundColor: isDark ? 'rgba(52,211,153,0.12)' : 'rgba(16,185,129,0.10)',
+              borderWidth: 2.5,
+              fill: true,
+              tension: 0.4,
+              pointRadius: 4,
+              pointHoverRadius: 6,
+              pointBackgroundColor: isDark ? '#34d399' : '#10b981',
+              pointBorderColor: '#ffffff',
+              pointBorderWidth: 1.5,
+              yAxisID: 'yRight',
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          interaction: { mode: 'index', intersect: false },
+          layout: { padding: { top: 6, right: 8, bottom: 2, left: 4 } },
+          plugins: {
+            legend: {
+              position: 'top',
+              align: 'end',
+              labels: {
+                color: colors.text,
+                font: { size: 11, weight: '600' },
+                usePointStyle: true,
+                pointStyle: 'circle',
+                boxWidth: 8,
+                boxHeight: 8,
+                padding: 14,
+              }
+            },
+            tooltip: {
+              backgroundColor: colors.tooltip,
+              titleColor: isDark ? '#f1f5f9' : '#1e293b',
+              bodyColor: colors.text,
+              borderColor: colors.tooltipBorder,
+              borderWidth: 1,
+              padding: 12,
+              callbacks: {
+                label: function(ctx) {
+                  if (ctx.dataset.label === 'Revenue (₱)') {
+                    return ' Revenue: ₱' + ctx.parsed.y.toLocaleString();
+                  }
+                  return ' Bookings: ' + ctx.parsed.y;
+                }
+              }
+            }
+          },
+          scales: {
+            x: {
+              grid: { display: false },
+              ticks: {
+                color: colors.text,
+                font: { size: 10, weight: '500' },
+                maxRotation: 45,
+                minRotation: 30,
+                padding: 4,
+              }
+            },
+            yLeft: {
+              type: 'linear',
+              position: 'left',
+              beginAtZero: true,
+              grid: { color: colors.grid, drawBorder: false },
+              ticks: {
+                color: colors.text,
+                font: { size: 10 },
+                stepSize: 1,
+                padding: 6,
+                maxTicksLimit: 5,
+              }
+            },
+            yRight: {
+              type: 'linear',
+              position: 'right',
+              beginAtZero: true,
+              grid: { display: false },
+              ticks: {
+                color: isDark ? '#34d399' : '#10b981',
+                font: { size: 10 },
+                padding: 6,
+                maxTicksLimit: 5,
+                callback: v => '₱' + (v >= 1000 ? (v / 1000).toFixed(1) + 'k' : v),
+              }
+            }
+          }
+        }
+      });
+    }
+  });
+</script>
+{% endblock %}

@@ -1,0 +1,583 @@
+/* ── Backdrops Redesign - Premium Style ── */
+
+:root {
+  --bd-bg: #ffffff;
+  --bd-card-bg: #ffffff;
+  --bd-border: #e5e7eb;
+  --bd-accent: #db2777;
+  --bd-white: #ffffff;
+  --bd-text-primary: #0f172a;
+  --bd-text-muted: #64748b;
+  --bd-radius: 18px;
+  --bd-radius-sm: 12px;
+}
+
+body {
+  background: var(--bd-bg) !important;
+}
+
+/* ── Hero Section ── */
+.bd-hero {
+  text-align: center;
+  padding: 3rem 1.5rem 2rem;
+  max-width: 680px;
+  margin: 0 auto;
+}
+
+.bd-eyebrow {
+  display: inline-block;
+  background: #fce7f3;
+  color: #db2777;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 0.3rem 0.9rem;
+  border-radius: 20px;
+  margin-bottom: 0.85rem;
+}
+
+.bd-hero-title {
+  font-family: 'Poppins', sans-serif;
+  font-size: clamp(1.8rem, 4vw, 2.6rem);
+  font-weight: 800;
+  color: var(--bd-text-primary);
+  margin: 0 0 0.75rem;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+
+.bd-hero-sub {
+  color: var(--bd-text-muted);
+  font-size: 1rem;
+  line-height: 1.7;
+  margin: 0;
+}
+
+/* ── Notice Banner ── */
+.bd-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.85rem;
+  background: #fce7f3;
+  border: 1px solid #fbcfe8;
+  border-radius: 14px;
+  padding: 1.1rem 1.4rem;
+  margin: 0 0 2.5rem;
+  max-width: 900px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.bd-notice-icon {
+  font-size: 1.2rem;
+  flex-shrink: 0;
+  margin-top: 0.1rem;
+}
+
+.bd-notice-text {
+  font-size: 0.88rem;
+  color: #831843;
+  line-height: 1.6;
+}
+
+.bd-notice-text strong {
+  color: #9d174d;
+}
+
+.bd-notice-text a {
+  color: #db2777;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.bd-notice-text a:hover {
+  text-decoration: underline;
+}
+
+/* ── Filters Wrapper ── */
+.bd-filters-wrapper {
+  display: flex;
+  justify-content: center;
+  padding: 0 1.5rem 2.5rem;
+}
+
+.bd-filters {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.bd-filter {
+  padding: 9px 22px;
+  border-radius: 100px;
+  border: 1px solid #e5e7eb;
+  background: #f8fafc;
+  color: #64748b;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: inherit;
+}
+
+.bd-filter:hover {
+  border-color: #db2777;
+  color: #db2777;
+  background: #fce7f3;
+  transform: translateY(-1px);
+}
+
+.bd-filter.active {
+  background: #db2777;
+  border-color: #db2777;
+  color: #ffffff;
+  font-weight: 600;
+}
+
+/* ── Backdrops Grid ── */
+.bd-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+  max-width: 1200px;
+  margin: 0 auto 4rem;
+  padding: 0 1.5rem;
+}
+
+/* ── Backdrop Card ── */
+.bd-card {
+  background: var(--bd-card-bg);
+  border: 1px solid var(--bd-border);
+  border-radius: var(--bd-radius);
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+}
+
+.bd-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+  border-color: #db2777;
+}
+
+/* ── Card Image ── */
+.bd-card-img {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4/3;
+  overflow: hidden;
+  background: #f1f5f9;
+}
+
+.bd-card-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+  display: block;
+}
+
+.bd-card:hover .bd-card-img img {
+  transform: scale(1.05);
+}
+
+.bd-card-img-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #fce7f3, #ede9fe);
+  font-size: 3rem;
+}
+
+/* ── Card Body ── */
+.bd-card-body {
+  padding: 1.25rem 1.4rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  flex: 1;
+}
+
+.bd-card-title {
+  margin: 0;
+  color: var(--bd-text-primary);
+  font-size: 1.05rem;
+  font-weight: 700;
+  font-family: 'Poppins', sans-serif;
+  line-height: 1.3;
+  letter-spacing: -0.02em;
+}
+
+.bd-card-desc {
+  font-size: 0.85rem;
+  color: var(--bd-text-muted);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.bd-card-meta {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.bd-meta-item {
+  font-size: 0.78rem;
+  color: var(--bd-text-muted);
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  padding: 0.2rem 0.6rem;
+  border-radius: 6px;
+}
+
+.bd-view-btn {
+  margin-top: auto;
+  width: 100%;
+  padding: 0.7rem;
+  background: #db2777;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  font-family: 'Poppins', sans-serif;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.bd-view-btn:hover {
+  background: #be1f64;
+  transform: translateY(-1px);
+}
+
+/* ── Empty State ── */
+.bd-empty {
+  grid-column: 1/-1;
+  text-align: center;
+  padding: 5rem 1rem;
+  color: var(--bd-text-muted);
+}
+
+.bd-empty-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+}
+
+.bd-empty h3 {
+  color: var(--bd-text-primary);
+  font-size: 1.4rem;
+  margin-bottom: 0.5rem;
+}
+
+.bd-empty p {
+  font-size: 0.95rem;
+}
+
+/* ── Modal ── */
+.bd-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  animation: modalIn 0.25s ease;
+}
+
+@keyframes modalIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+.bd-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(5, 8, 20, 0.88);
+  backdrop-filter: blur(8px);
+}
+
+/* ── Modal Box ── */
+.bd-modal-box {
+  position: relative;
+  z-index: 1;
+  background: #ffffff;
+  border-radius: 24px;
+  overflow: hidden;
+  max-width: 860px;
+  width: 100%;
+  box-shadow: 0 32px 80px rgba(0, 0, 0, 0.4);
+  animation: modalUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+}
+
+@keyframes modalUp {
+  from {
+    opacity: 0;
+    transform: scale(0.88) translateY(28px);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* ── Close button ── */
+.bd-modal-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 10;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  color: #475569;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, transform 0.2s;
+  line-height: 1;
+}
+
+.bd-modal-close:hover {
+  background: rgba(0, 0, 0, 0.15);
+  transform: scale(1.1);
+  color: #db2777;
+}
+
+/* ── Modal Inner ── */
+.bd-modal-inner {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  height: 100%;
+}
+
+/* ── Image Column ── */
+.bd-modal-img-col {
+  position: relative;
+  background: #f1f5f9;
+  min-height: 320px;
+}
+
+.bd-modal-img-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bd-modal-img-col img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.bd-modal-img-placeholder {
+  width: 100%;
+  height: 100%;
+  min-height: 320px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #fce7f3, #ede9fe);
+  font-size: 4rem;
+}
+
+/* ── Detail Column ── */
+.bd-modal-detail-col {
+  padding: 2rem 1.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  overflow-y: auto;
+  max-height: 90vh;
+}
+
+.bd-modal-title {
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--bd-text-primary);
+  margin: 0;
+  line-height: 1.2;
+}
+
+.bd-modal-meta-row {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.3rem;
+}
+
+.bd-modal-meta-chip {
+  font-size: 0.8rem;
+  color: #475569;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  padding: 0.3rem 0.75rem;
+  border-radius: 8px;
+}
+
+.bd-modal-desc {
+  font-size: 0.88rem;
+  color: #475569;
+  line-height: 1.7;
+  margin: 0;
+}
+
+.bd-modal-features {
+  margin-top: 1rem;
+}
+
+.bd-modal-features h4 {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--bd-text-primary);
+  margin: 0 0 0.5rem;
+}
+
+.bd-modal-features ul {
+  padding-left: 1.1rem;
+  margin: 0;
+}
+
+.bd-modal-features li {
+  font-size: 0.85rem;
+  color: #475569;
+  margin-bottom: 0.35rem;
+}
+
+.bd-book-btn {
+  display: block;
+  text-align: center;
+  padding: 0.85rem 1.5rem;
+  background: #db2777;
+  color: #fff;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  font-family: 'Poppins', sans-serif;
+  text-decoration: none;
+  transition: background 0.2s, transform 0.2s;
+  box-shadow: 0 4px 16px rgba(219, 39, 119, 0.3);
+  margin-top: auto;
+  flex-shrink: 0;
+}
+
+.bd-book-btn:hover {
+  background: #be1f64;
+  transform: translateY(-2px);
+  color: #fff;
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .bd-hero {
+    padding: 2rem 1.25rem 1.5rem;
+  }
+
+  .bd-notice {
+    margin: 0 1rem 2rem;
+    padding: 1rem 1.25rem;
+  }
+
+  .bd-notice-text {
+    font-size: 0.8rem;
+  }
+
+  .bd-filters-wrapper {
+    padding: 0 1rem 2rem;
+  }
+
+  .bd-filters {
+    gap: 6px;
+  }
+
+  .bd-filter {
+    padding: 8px 16px;
+    font-size: 0.78rem;
+  }
+
+  .bd-grid {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+    padding: 0 1rem;
+    margin-bottom: 3rem;
+  }
+
+  .bd-card {
+    border-radius: 16px;
+  }
+
+  .bd-modal {
+    padding: 12px;
+  }
+
+  .bd-modal-box {
+    border-radius: 18px;
+    width: 95vw;
+  }
+
+  .bd-modal-inner {
+    grid-template-columns: 1fr;
+  }
+
+  .bd-modal-img-col {
+    min-height: 250px;
+  }
+
+  .bd-modal-detail-col {
+    padding: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .bd-hero-title {
+    font-size: 1.8rem;
+  }
+
+  .bd-filter {
+    padding: 7px 13px;
+    font-size: 0.75rem;
+  }
+
+  .bd-card-title {
+    font-size: 0.95rem;
+  }
+
+  .bd-modal-close {
+    width: 38px;
+    height: 38px;
+    top: 12px;
+    right: 12px;
+  }
+
+  .bd-modal-title {
+    font-size: 1.2rem;
+  }
+
+  .bd-modal-detail-col {
+    padding: 1.25rem;
+  }
+}

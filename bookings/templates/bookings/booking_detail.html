@@ -1,0 +1,540 @@
+{% extends 'bookings/base.html' %}
+{% load static %}
+
+{% block title %}Booking Confirmation - Look Here Self Portrait Studio{% endblock %}
+
+{% block extra_head %}
+<style>
+  /* ── Full-width override ── */
+  body {
+    margin: 0;
+    padding: 0;
+  }
+
+  main {
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 100% !important;
+    max-width: none !important;
+    overflow-x: hidden;
+  }
+
+  /* ── Full-width edge-to-edge layout ── */
+  .confirmation-page {
+    margin: 0;
+    padding: 0;
+    font-family: 'Inter', sans-serif;
+    background: #ffffff;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+  }
+
+  /* ── Content wrapper with responsive padding ── */
+  .confirmation-page>* {
+    margin-left: 0;
+    margin-right: 0;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  /* ── Consistent padding for all sections ── */
+  .confirmation-page .status-banner,
+  .confirmation-page .details-card,
+  .confirmation-page .actions {
+    padding-left: 32px;
+    padding-right: 32px;
+  }
+
+  /* ── Status banner: full width with responsive padding ── */
+  .status-banner {
+    border-radius: 0;
+    padding: 24px 32px;
+    margin-bottom: 0;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .status-banner .status-icon {
+    font-size: 1.5rem;
+    flex-shrink: 0;
+  }
+
+  .status-banner h2 {
+    margin: 0 0 0.25rem 0;
+    font-size: 1.3rem;
+  }
+
+  .status-banner p {
+    margin: 0;
+    font-size: 0.9rem;
+  }
+
+  .status-pending {
+    background: #e0e7ff;
+    border: none;
+    border-bottom: 1px solid #6366f1;
+    color: #3730a3;
+  }
+
+  .status-under_review {
+    background: #fef3c7;
+    border: none;
+    border-bottom: 1px solid #f59e0b;
+    color: #92400e;
+  }
+
+  .status-paid {
+    background: #d1fae5;
+    border: none;
+    border-bottom: 1px solid #10b981;
+    color: #065f46;
+  }
+
+  .status-cancelled {
+    background: #fee2e2;
+    border: none;
+    border-bottom: 1px solid #ef4444;
+    color: #991b1b;
+  }
+
+  /* ── Details card: full width ── */
+  .details-card {
+    background: #ffffff;
+    border: none;
+    border-radius: 0;
+    overflow: hidden;
+    box-shadow: none;
+    border-top: 1px solid #e2e8f0;
+    border-bottom: 1px solid #e2e8f0;
+    width: 100%;
+    box-sizing: border-box;
+    margin: 0;
+  }
+
+  .details-card-header {
+    background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+    padding: 24px 32px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .details-card-header h3 {
+    margin: 0;
+    color: #fff;
+    font-size: 1.05rem;
+    font-weight: 600;
+  }
+
+  .ref-badge {
+    margin-left: auto;
+    background: rgba(255, 255, 255, 0.2);
+    color: #fff;
+    font-size: 0.8rem;
+    font-weight: 700;
+    padding: 0.3rem 0.75rem;
+    border-radius: 20px;
+    letter-spacing: 0.03em;
+  }
+
+  /* ── Detail rows: full width ── */
+  .detail-row {
+    display: flex;
+    align-items: center;
+    padding: 16px 32px;
+    border-bottom: 1px solid #f1f5f9;
+    gap: 16px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .detail-row:last-child {
+    border-bottom: none;
+  }
+
+  .detail-icon {
+    font-size: 1.1rem;
+    width: 28px;
+    text-align: center;
+    flex-shrink: 0;
+  }
+
+  .detail-label {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    width: 130px;
+    flex-shrink: 0;
+  }
+
+  .detail-value {
+    font-size: 0.95rem;
+    color: #1e293b;
+    font-weight: 500;
+    flex: 1;
+  }
+
+  .detail-value.total {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #2563eb;
+  }
+
+  .status-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.82rem;
+    font-weight: 600;
+  }
+
+  .badge-pending {
+    background: #e0e7ff;
+    color: #3730a3;
+  }
+
+  .badge-under_review {
+    background: #fef3c7;
+    color: #92400e;
+  }
+
+  .badge-paid {
+    background: #d1fae5;
+    color: #065f46;
+  }
+
+  .badge-cancelled {
+    background: #fee2e2;
+    color: #991b1b;
+  }
+
+  /* ── Actions: full width with responsive padding ── */
+  .actions {
+    display: flex;
+    gap: 16px;
+    margin-top: 0;
+    flex-wrap: wrap;
+    padding: 24px 32px;
+    width: 100%;
+    box-sizing: border-box;
+    background: #f8fafc;
+    border-top: 1px solid #e2e8f0;
+  }
+
+  .btn-primary {
+    background: #2563eb;
+    color: #fff;
+    padding: 12px 24px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 14px;
+    border: none;
+    cursor: pointer;
+    transition: background 0.2s ease;
+  }
+
+  .btn-primary:hover {
+    background: #1e3a8a;
+    color: #fff;
+  }
+
+  .btn-secondary-link {
+    background: #ffffff;
+    color: #475569;
+    padding: 12px 24px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 14px;
+    border: 1px solid #e2e8f0;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .btn-secondary-link:hover {
+    background: #f1f5f9;
+    color: #1e293b;
+    border-color: #cbd5e1;
+  }
+
+  .btn-receipt {
+    background: #10b981;
+    color: #fff;
+    padding: 12px 24px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 14px;
+    border: none;
+    cursor: pointer;
+    transition: background 0.2s ease;
+  }
+
+  .btn-receipt:hover {
+    background: #059669;
+    color: #fff;
+  }
+
+  /* ── Responsive design ── */
+  @media (max-width: 1024px) {
+
+    .confirmation-page .status-banner,
+    .confirmation-page .details-card,
+    .confirmation-page .actions {
+      padding-left: 24px;
+      padding-right: 24px;
+    }
+
+    .status-banner {
+      padding: 20px 24px;
+    }
+
+    .details-card-header {
+      padding: 20px 24px;
+    }
+
+    .detail-row {
+      padding: 14px 24px;
+    }
+
+    .actions {
+      padding: 20px 24px;
+    }
+  }
+
+  @media (max-width: 768px) {
+
+    .confirmation-page .status-banner,
+    .confirmation-page .details-card,
+    .confirmation-page .actions {
+      padding-left: 16px;
+      padding-right: 16px;
+    }
+
+    .status-banner {
+      padding: 16px 16px;
+    }
+
+    .details-card-header {
+      padding: 16px 16px;
+      font-size: 0.95rem;
+    }
+
+    .detail-row {
+      padding: 12px 16px;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .detail-label {
+      width: 100%;
+      margin-bottom: 4px;
+    }
+
+    .detail-icon {
+      display: none;
+    }
+
+    .detail-value {
+      width: 100%;
+    }
+
+    .actions {
+      padding: 16px 16px;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .btn-primary,
+    .btn-secondary-link,
+    .btn-receipt {
+      width: 100%;
+      text-align: center;
+      padding: 12px 16px;
+    }
+  }
+
+  @media (max-width: 480px) {
+
+    .confirmation-page .status-banner,
+    .confirmation-page .details-card,
+    .confirmation-page .actions {
+      padding-left: 12px;
+      padding-right: 12px;
+    }
+
+    .status-banner {
+      padding: 12px 12px;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .status-banner h2 {
+      font-size: 1.1rem;
+    }
+
+    .status-banner p {
+      font-size: 0.85rem;
+    }
+
+    .details-card-header {
+      padding: 12px 12px;
+      font-size: 0.85rem;
+    }
+
+    .detail-row {
+      padding: 10px 12px;
+      font-size: 0.85rem;
+    }
+
+    .actions {
+      padding: 12px 12px;
+      gap: 8px;
+    }
+
+    .btn-primary,
+    .btn-secondary-link,
+    .btn-receipt {
+      padding: 10px 12px;
+      font-size: 13px;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="confirmation-page">
+
+  {% if booking.status == 'pending' %}
+  <div class="status-banner status-pending">
+    <span class="status-icon">📋</span>
+    <div>
+      <h2>Booking Received!</h2>
+      {% if booking.payment_method == 'cash' %}<p>Your booking is confirmed. Please bring the exact amount (₱{{
+        booking.total_price }}) when you arrive at the studio.</p>{% else %}<p>Your booking has been received and is
+        being processed.</p>{% endif %}
+    </div>
+  </div>
+  {% elif booking.status == 'under_review' %}
+  <div class="status-banner status-under_review">
+    <span class="status-icon">⏳</span>
+    <div>
+      <h2>Payment Under Review</h2>
+      <p>We received your payment proof and it is currently under review. You will get a confirmation email once
+        verified (usually within 24 hours).</p>
+    </div>
+  </div>
+  {% elif booking.status == 'paid' %}
+  <div class="status-banner status-paid">
+    <span class="status-icon">✅</span>
+    <div>
+      <h2>Booking Confirmed!</h2>
+      <p>Your booking is confirmed and payment has been verified. A confirmation email has been sent to {{ booking.email
+        }}.</p>
+    </div>
+  </div>
+  {% elif booking.status == 'cancelled' %}
+  <div class="status-banner status-cancelled">
+    <span class="status-icon">❌</span>
+    <div>
+      <h2>Booking Cancelled</h2>
+      {% if booking.cancellation_reason %}<p><strong>Reason:</strong> {{ booking.cancellation_reason }}</p>{% endif %}
+      <p>If you made a payment, a refund will be processed within 3-5 business days.</p>
+    </div>
+  </div>
+  {% else %}
+  <div class="status-banner status-pending">
+    <span class="status-icon">📋</span>
+    <div>
+      <h2>Thank you for your booking!</h2>
+    </div>
+  </div>
+  {% endif %}
+
+  <div class="details-card">
+    <div class="details-card-header">
+      <span style="font-size:1.2rem;">🗓️</span>
+      <h3>Booking Details</h3>
+      <span class="ref-badge">{{ booking.reference_code }}</span>
+    </div>
+    <div>
+
+      <div class="detail-row">
+        <span class="detail-icon">📅</span>
+        <span class="detail-label">Date</span>
+        <span class="detail-value">{{ booking.date|date:"F j, Y" }}</span>
+      </div>
+
+      <div class="detail-row">
+        <span class="detail-icon">🕐</span>
+        <span class="detail-label">Time</span>
+        <span class="detail-value">{{ booking.time|time:"g:i A" }}</span>
+      </div>
+
+      <div class="detail-row">
+        <span class="detail-icon">📦</span>
+        <span class="detail-label">Package</span>
+        <span class="detail-value">{{ booking.package.name }}</span>
+      </div>
+
+      <div class="detail-row">
+        <span class="detail-icon">🎨</span>
+        <span class="detail-label">Backdrop</span>
+        <span class="detail-value">{% if booking.backdrop %}{{ booking.backdrop.name }}{% else %}Not Selected{% endif %}</span>
+      </div>
+
+      <div class="detail-row">
+        <span class="detail-icon">✨</span>
+        <span class="detail-label">Add-ons</span>
+        <span class="detail-value">{% for addon in booking.addons.all %}{{ addon.name }}{% if not forloop.last %}, {% endif %}{% empty %}None{% endfor %}</span>
+      </div>
+
+      <div class="detail-row">
+        <span class="detail-icon">💰</span>
+        <span class="detail-label">Total</span>
+        <span class="detail-value total">₱{{ booking.total_price }}</span>
+      </div>
+
+      <div class="detail-row">
+        <span class="detail-icon">🔖</span>
+        <span class="detail-label">Status</span>
+        <span class="detail-value"><span class="status-badge badge-{{ booking.status }}">{{ booking.get_status_display }}</span></span>
+      </div>
+
+      <div class="detail-row">
+        <span class="detail-icon">👤</span>
+        <span class="detail-label">Name</span>
+        <span class="detail-value">{{ booking.customer_name }}</span>
+      </div>
+
+      <div class="detail-row">
+        <span class="detail-icon">📧</span>
+        <span class="detail-label">Email</span>
+        <span class="detail-value">{{ booking.email }}</span>
+      </div>
+
+      <div class="detail-row">
+        <span class="detail-icon">📱</span>
+        <span class="detail-label">Phone</span>
+        <span class="detail-value">{{ booking.phone }}</span>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="actions">
+    {% if booking.status == 'paid' %}<a href="/receipt/{{ booking.reference_code }}/" class="btn-receipt">🧾 View
+      Receipt</a>{% endif %}
+    <a href="{% url 'home' %}" class="btn-secondary-link">← Back to Home</a>
+  </div>
+
+</div>
+{% endblock %}

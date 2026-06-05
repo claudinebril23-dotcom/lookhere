@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Notification System Debug</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .section {
+            background: white;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 { color: #333; }
+        h2 { color: #666; margin-top: 0; }
+        button {
+            background: #6366f1;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-right: 10px;
+        }
+        button:hover { background: #4f46e5; }
+        pre {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 6px;
+            overflow-x: auto;
+            border: 1px solid #e5e7eb;
+        }
+        .status { padding: 10px; border-radius: 6px; margin: 10px 0; }
+        .success { background: #d1fae5; color: #065f46; }
+        .error { background: #fee2e2; color: #991b1b; }
+        .info { background: #dbeafe; color: #1e40af; }
+        .notif-item {
+            padding: 12px;
+            margin: 8px 0;
+            border-left: 3px solid #6366f1;
+            background: #f8f9fa;
+            border-radius: 4px;
+        }
+        .notif-item.unread {
+            background: #eff6ff;
+            border-left-color: #3b82f6;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔔 Notification System Debug</h1>
+    
+    <div class="section">
+        <h2>1. Test API Connection</h2>
+        <button onclick="testAPI()">Test /api/notifications/</button>
+        <button onclick="createTestNotification()">Create Test Notification</button>
+        <div id="api-result"></div>
+    </div>
+    
+    <div class="section">
+        <h2>2. Current Notifications</h2>
+        <button onclick="loadNotifications()">Refresh Notifications</button>
+        <div id="notifications-list"></div>
+    </div>
+    
+    <div class="section">
+        <h2>3. Console Logs</h2>
+        <div id="console-logs" style="max-height: 300px; overflow-y: auto;"></div>
+    </div>
+
+    <script>
+        const logs = [];
+        
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            logs.push({ timestamp, message, type });
+            updateConsole();
+            console.log(`[${timestamp}] ${message}`);
+        }
+        
+        function updateConsole() {
+            const container = document.getElementById('console-logs');
+            container.innerHTML = logs.map(l => 
+                `<div class="status ${l.type}">[${l.timestamp}] ${l.message}</div>`
+            ).reverse().join('');
+        }
+        
+        async function testAPI() {
+            log('Testing API connection...', 'info');
+            const resultDiv = document.getElementById('api-result');
+            
+            try {
+                const response = await fetch('/api/notifications/');
+                log(`API Response Status: ${response.status}`, response.ok ? 'success' : 'error');
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                log(`Received ${data.notifications.length} notifications, ${data.unread_count} unread`, 'success');
+                
+                resultDiv.innerHTML = `
+                    <div class="status success">
+                        ✅ API is working!<br>
+                        Total notifications: ${data.notifications.length}<br>
+                        Unread: ${data.unread_count}
+                    </div>
+                    <pre>${JSON.stringify(data, null, 2)}</pre>
+                `;
+            } catch (error) {
+                log(`API Error: ${error.message}`, 'error');
+                resultDiv.innerHTML = `
+                    <div class="status error">
+                        ❌ API Error: ${error.message}
+                    </div>
+                `;
+            }
+        }
+        
+        async function createTestNotification() {
+            log('Creating test notification...', 'info');
+            const resultDiv = document.getElementById('api-result');
+            
+            try {
+                const response = await fetch('/api/create-test-notification/', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': getCookie('csrftoken'),
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+                
+                const data = await response.json();
+                log('Test notification created successfully', 'success');
+                resultDiv.innerHTML = `
+                    <div class="status success">
+                        ✅ Test notification created!
+                    </div>
+                `;
+                
+                // Reload notifications
+                setTimeout(loadNotifications, 500);
+            } catch (error) {
+                log(`Error creating notification: ${error.message}`, 'error');
+                resultDiv.innerHTML = `
+                    <div class="status error">
+                        ❌ Error: ${error.message}
+                    </div>
+                `;
+            }
+        }
+        
+        async function loadNotifications() {
+            log('Loading notifications...', 'info');
+            const listDiv = document.getElementById('notifications-list');
+            
+            try {
+                const response = await fetch('/api/notifications/');
+                const data = await response.json();
+                
+                if (data.notifications.length === 0) {
+                    listDiv.innerHTML = '<div class="status info">No notifications found</div>';
+                    log('No notifications in database', 'info');
+                    return;
+                }
+                
+                log(`Loaded ${data.notifications.length} notifications`, 'success');
+                
+                listDiv.innerHTML = data.notifications.map(n => `
+                    <div class="notif-item ${n.is_read ? '' : 'unread'}">
+                        <strong>${n.title}</strong> ${n.is_read ? '' : '🔵'}
+                        <div style="font-size: 13px; color: #666; margin-top: 4px;">
+                            ${n.message}
+                        </div>
+                        <div style="font-size: 11px; color: #999; margin-top: 4px;">
+                            ${n.created_at} ${n.reference_code ? `• ${n.reference_code}` : ''}
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                log(`Error loading notifications: ${error.message}`, 'error');
+                listDiv.innerHTML = `
+                    <div class="status error">
+                        ❌ Error: ${error.message}
+                    </div>
+                `;
+            }
+        }
+        
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        
+        // Auto-load on page load
+        window.addEventListener('load', () => {
+            log('Page loaded, testing API...', 'info');
+            testAPI();
+            loadNotifications();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Receipt - {{ booking.reference_code }}</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+
+        .receipt-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .receipt-header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #FF6B6B;
+            padding-bottom: 20px;
+        }
+
+        .studio-name {
+            font-size: 28px;
+            font-weight: bold;
+            color: #1a1a2e;
+            margin-bottom: 5px;
+        }
+
+        .receipt-title {
+            font-size: 18px;
+            color: #FF6B6B;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+
+        .receipt-code {
+            font-size: 14px;
+            color: #666;
+            margin-top: 5px;
+            font-family: monospace;
+        }
+
+        .section {
+            margin-bottom: 25px;
+        }
+
+        .section-title {
+            font-size: 14px;
+            font-weight: bold;
+            color: #1a1a2e;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .detail-label {
+            color: #666;
+            font-weight: 500;
+        }
+
+        .detail-value {
+            color: #1a1a2e;
+            font-weight: 600;
+        }
+
+        .payment-proof {
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .payment-proof img {
+            max-width: 100%;
+            max-height: 300px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .payment-proof-label {
+            font-size: 12px;
+            color: #666;
+            margin-top: 8px;
+        }
+
+        .total-section {
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 20px 0;
+        }
+
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 16px;
+            font-weight: bold;
+            color: #1a1a2e;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .status-paid {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .print-button {
+            display: block;
+            margin: 20px auto;
+            padding: 10px 30px;
+            background: #FF6B6B;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .print-button:hover {
+            background: #e55555;
+        }
+
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+
+            .receipt-container {
+                box-shadow: none;
+                padding: 0;
+            }
+
+            .print-button {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="receipt-container">
+        <div class="receipt-header">
+            <div class="studio-name">Look Here Self Portrait Studio</div>
+            <div class="receipt-title">BOOKING RECEIPT</div>
+            <div class="receipt-code">{{ booking.reference_code }}</div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Customer Information</div>
+            <div class="detail-row">
+                <span class="detail-label">Name:</span>
+                <span class="detail-value">{{ booking.customer_name }}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Email:</span>
+                <span class="detail-value">{{ booking.email }}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Phone:</span>
+                <span class="detail-value">{{ booking.phone }}</span>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Session Details</div>
+            <div class="detail-row">
+                <span class="detail-label">Date:</span>
+                <span class="detail-value">{{ booking.date|date:"F d, Y" }}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Time:</span>
+                <span class="detail-value">{{ booking.time|time:"h:i A" }}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Package:</span>
+                <span class="detail-value">{{ booking.package.name }}</span>
+            </div>
+            {% if booking.backdrop %}
+            <div class="detail-row">
+                <span class="detail-label">Backdrop:</span>
+                <span class="detail-value">{{ booking.backdrop.name }}</span>
+            </div>
+            {% endif %}
+
+            {% if booking.addons.all %}
+            <div class="detail-row">
+                <span class="detail-label">Add-ons:</span>
+                <span class="detail-value">
+                    {% for addon in booking.addons.all %}
+                    {{ addon.name }}{% if not forloop.last %}, {% endif %}
+                    {% endfor %}
+                </span>
+            </div>
+            {% endif %}
+
+        </div>
+
+        {% if booking.payment_proof %}
+        <div class="payment-proof">
+            <div class="section-title">Payment Proof</div>
+            <img src="{{ booking.payment_proof.url }}" alt="Payment Proof">
+            <div class="payment-proof-label">Uploaded on {{ booking.created_at|date:"F d, Y \a\t h:i A" }}</div>
+        </div>
+        {% endif %}
+
+        <div class="total-section">
+            <div class="total-row">
+                <span>Total Amount:</span>
+                <span>₱{{ booking.total_price|floatformat:2 }}</span>
+            </div>
+            <div style="margin-top: 10px; text-align: right;">
+                <span class="status-badge status-paid">{{ booking.get_status_display }}</span>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p><strong>Studio Address:</strong></p>
+            <p>2nd Floor, Chinabank Bldg, Gualberto Avenue, Poblacion B, Rosario, 4225 Batangas</p>
+            <p style="margin-top: 10px;">For inquiries: lookherespstudio@gmail.com</p>
+            <p style="margin-top: 15px; color: #999;">Thank you for booking with Look Here Self Portrait Studio!</p>
+        </div>
+
+        <button class="print-button" onclick="window.print()">Print Receipt</button>
+    </div>
+</body>
+
+</html>

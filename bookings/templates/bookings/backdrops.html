@@ -1,0 +1,178 @@
+{% extends 'bookings/base.html' %}
+{% load static %}
+
+{% block title %}Backdrops - Look Here Studio{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'bookings/css/backdrops_redesign.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<!-- ── Page Hero ── -->
+<div class="bd-hero">
+  <span class="bd-eyebrow">Studio Backdrops</span>
+  <h1 class="bd-hero-title">Choose Your Perfect Backdrop</h1>
+  <p class="bd-hero-sub">Express yourself with our curated collection of solid-color and themed backdrops. Every
+    backdrop is designed to complement your unique style and personality.</p>
+</div>
+
+<!-- ── Notice Banner ── -->
+<div class="bd-notice">
+  <div class="bd-notice-icon">🎨</div>
+  <div class="bd-notice-text">
+    <strong>Custom backdrops available!</strong>
+    We can create <em>custom themed backdrops</em> for your special events or corporate sessions.
+    <a href="https://www.facebook.com/p/Look-Here-Self-Portrait-Studio-61564573776400/" target="_blank"
+      rel="noopener">Message us on Facebook</a> for custom requests!
+  </div>
+</div>
+
+<!-- ── Filter Tabs ── -->
+<div class="bd-filters-wrapper">
+  <div class="bd-filters">
+    <button class="bd-filter active" onclick="filterBackdrops('all')" data-filter="all">All</button>
+    <button class="bd-filter" onclick="filterBackdrops('solid')" data-filter="solid">Solid Colors</button>
+    <button class="bd-filter" onclick="filterBackdrops('themed')" data-filter="themed">Themed</button>
+    <button class="bd-filter" onclick="filterBackdrops('gradient')" data-filter="gradient">Gradients</button>
+  </div>
+</div>
+
+<!-- ── Backdrops Grid ── -->
+<div class="bd-grid">
+  {% for backdrop in backdrops %}
+  <div class="bd-card" data-category="{{ backdrop.category|lower|default:'solid' }}">
+
+    <!-- Card Image -->
+    <div class="bd-card-img">
+      {% if backdrop.image %}
+      <img src="{{ backdrop.image.url }}" alt="{{ backdrop.name }}" loading="lazy">
+      {% else %}
+      <div class="bd-card-img-placeholder" style="background-color: {{ backdrop.color|default:'#e5e7eb' }};"></div>
+      {% endif %}
+    </div>
+
+    <!-- Card Body -->
+    <div class="bd-card-body">
+      <h3 class="bd-card-title">{{ backdrop.name }}</h3>
+
+      {% if backdrop.description %}
+      <p class="bd-card-desc">{{ backdrop.description }}</p>
+      {% endif %}
+
+      <div class="bd-card-meta">
+        <span class="bd-meta-item">{{ backdrop.get_category_display|default:'Solid Color' }}</span>
+      </div>
+
+      <button class="bd-view-btn" onclick="openBackdropModal(this.closest('.bd-card'))">
+        View Details →
+      </button>
+    </div>
+  </div>
+  {% empty %}
+  <div class="bd-empty">
+    <div class="bd-empty-icon">🎨</div>
+    <h3>No Backdrops Available</h3>
+    <p>Check back soon for our backdrop collection!</p>
+  </div>
+  {% endfor %}
+</div>
+
+<!-- ── Backdrop Modal ── -->
+<div id="backdropModal" class="bd-modal" style="display:none;" role="dialog" aria-modal="true">
+  <div class="bd-modal-backdrop" onclick="closeBackdropModal()"></div>
+
+  <div class="bd-modal-box">
+    <button class="bd-modal-close" onclick="closeBackdropModal()" aria-label="Close">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+        stroke-linecap="round">
+        <line x1="18" y1="6" x2="6" y2="18" />
+        <line x1="6" y1="6" x2="18" y2="18" />
+      </svg>
+    </button>
+
+    <div class="bd-modal-inner">
+      <!-- Left: Image -->
+      <div class="bd-modal-img-col">
+        <div id="bdModalImgContainer" class="bd-modal-img-container">
+          <img id="bdModalImg" src="" alt="">
+        </div>
+        <div id="bdModalImgPlaceholder" class="bd-modal-img-placeholder" style="display:none;"></div>
+      </div>
+
+      <!-- Right: Details -->
+      <div class="bd-modal-detail-col">
+        <h2 id="bdModalTitle" class="bd-modal-title"></h2>
+
+        <div class="bd-modal-meta-row">
+          <span id="bdModalCategory" class="bd-modal-meta-chip"></span>
+        </div>
+
+        <p id="bdModalDesc" class="bd-modal-desc"></p>
+
+        <div class="bd-modal-features">
+          <h4>Perfect For:</h4>
+          <ul id="bdModalFeatures">
+            <li>Professional portraits</li>
+            <li>Studio sessions</li>
+            <li>Group photos</li>
+          </ul>
+        </div>
+
+        <a id="bdModalBookBtn" href="#" class="bd-book-btn">Book with This Backdrop →</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  function openBackdropModal(card) {
+    const modal = document.getElementById('backdropModal');
+    const imgEl = document.getElementById('bdModalImg');
+    const imgContainer = document.getElementById('bdModalImgContainer');
+    const placeholder = document.getElementById('bdModalImgPlaceholder');
+    const imgSrc = card.querySelector('.bd-card-img img')?.src;
+    const bgColor = card.querySelector('.bd-card-img-placeholder')?.style.backgroundColor;
+
+    if (imgSrc) {
+      imgEl.src = imgSrc;
+      imgContainer.style.display = 'flex';
+      placeholder.style.display = 'none';
+    } else if (bgColor) {
+      placeholder.style.backgroundColor = bgColor;
+      placeholder.style.display = 'flex';
+      imgContainer.style.display = 'none';
+    }
+
+    document.getElementById('bdModalTitle').textContent = card.querySelector('.bd-card-title').textContent;
+    document.getElementById('bdModalCategory').textContent = card.querySelector('.bd-meta-item').textContent;
+
+    const desc = card.querySelector('.bd-card-desc');
+    document.getElementById('bdModalDesc').textContent = desc ? desc.textContent : 'A beautiful backdrop for your perfect shot.';
+
+    modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeBackdropModal() {
+    document.getElementById('backdropModal').style.display = 'none';
+    document.body.style.overflow = 'auto';
+  }
+
+  function filterBackdrops(cat) {
+    document.querySelectorAll('.bd-card').forEach(el => {
+      el.style.display = (cat === 'all' || el.dataset.category === cat) ? '' : 'none';
+    });
+    document.querySelectorAll('.bd-filter').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.filter === cat);
+    });
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closeBackdropModal();
+  });
+</script>
+{% endblock %}

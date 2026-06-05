@@ -1,0 +1,558 @@
+{% extends 'bookings/base.html' %}
+{% load static %}
+
+{% block title %}Gallery — Look Here Self Portrait Studio{% endblock %}
+
+{% block extra_head %}
+<style>
+  /* ═══════════════════════════════════════════════════════════
+     MODERN GALLERY PAGE - Enhanced UI/UX Design
+     ═══════════════════════════════════════════════════════════ */
+
+  /* ── CSS Variables ── */
+  :root {
+    --gal-primary: #667eea;
+    --gal-primary-dark: #5a67d8;
+    --gal-secondary: #764ba2;
+    --gal-bg-dark: #0f172a;
+    --gal-text-dark: #0f172a;
+    --gal-text-muted: #64748b;
+    --gal-text-light: #94a3b8;
+    --gal-border: #1e293b;
+    --gal-bg-light: #1e293b;
+    --gal-bg-card: #334155;
+    --gal-radius-sm: 8px;
+    --gal-radius-md: 12px;
+    --gal-radius-lg: 16px;
+    --gal-radius-xl: 20px;
+    --gal-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.2);
+    --gal-shadow-md: 0 4px 16px rgba(0, 0, 0, 0.3);
+    --gal-shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.4);
+    --gal-shadow-xl: 0 12px 48px rgba(102, 126, 234, 0.25);
+    --gal-transition: all 0.3s ease;
+  }
+
+  /* ── Hero Section ── */
+  .gallery-hero {
+    background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 30%, #e0e7ff 60%, #ddd6fe 100%);
+    padding: 6rem 2rem 5rem;
+    text-align: center;
+    color: var(--text-dark, #0f172a);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .gallery-hero::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(ellipse at 30% 20%, rgba(165, 180, 252, 0.3) 0%, transparent 50%);
+    pointer-events: none;
+    animation: float 20s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translate(0, 0) rotate(0deg); }
+    50% { transform: translate(30px, -30px) rotate(180deg); }
+  }
+
+  .gallery-hero::after {
+    display: none;
+  }
+
+  .gallery-hero-content {
+    position: relative;
+    z-index: 1;
+    max-width: 700px;
+    margin: 0 auto;
+  }
+
+  .gallery-hero-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: #fff;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    padding: 0.45rem 1.1rem;
+    border-radius: 50px;
+    margin-bottom: 1.5rem;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
+  }
+
+  .gallery-hero h1 {
+    font-family: 'Poppins', sans-serif;
+    font-size: clamp(2.4rem, 5vw, 3.5rem);
+    font-weight: 900;
+    margin: 0 0 1.25rem;
+    color: #0f172a;
+    text-shadow: 0 2px 16px rgba(37, 99, 235, 0.15);
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+  }
+
+  .gallery-hero p {
+    font-size: 1.05rem;
+    color: #475569;
+    margin: 0;
+    line-height: 1.8;
+    max-width: 540px;
+    margin-left: auto;
+    margin-right: auto;
+    font-weight: 400;
+  }
+
+  /* ── Gallery Container ── */
+  .gallery-container {
+    max-width: 1300px;
+    margin: 0 auto;
+    padding: 4rem 2rem 5rem;
+    background: transparent;
+    min-height: calc(100vh - 300px);
+  }
+
+  /* ── Filter Tabs ── */
+  .gallery-filters {
+    display: flex;
+    justify-content: center;
+    gap: 0.75rem;
+    margin-bottom: 3.5rem;
+    flex-wrap: wrap;
+  }
+
+  .filter-btn {
+    padding: 0.65rem 1.5rem;
+    background: #f1f5f9;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 50px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #64748b;
+    cursor: pointer;
+    transition: var(--gal-transition);
+    text-transform: capitalize;
+    font-family: 'Poppins', sans-serif;
+    letter-spacing: 0.01em;
+  }
+
+  .filter-btn:hover {
+    border-color: #2563eb;
+    color: #2563eb;
+    background: #dbeafe;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(37, 99, 235, 0.15);
+  }
+
+  .filter-btn.active {
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    border-color: #2563eb;
+    color: white;
+    box-shadow: 0 4px 20px rgba(37, 99, 235, 0.3);
+  }
+
+  /* ── Gallery Grid ── */
+  .gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+    grid-auto-rows: 10px;
+  }
+
+  .gallery-item {
+    position: relative;
+    border-radius: var(--gal-radius-lg);
+    overflow: hidden;
+    background: #fff;
+    cursor: pointer;
+    transition: var(--gal-transition);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e2e8f0;
+  }
+
+  .gallery-item:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 48px rgba(37, 99, 235, 0.15);
+    border-color: #bfdbfe;
+  }
+
+  .gallery-item img {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+    display: block;
+  }
+
+  .gallery-item:hover img {
+    transform: scale(1.06);
+  }
+
+  .gallery-item-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(15, 23, 42, 0.85) 0%, rgba(15, 23, 42, 0.4) 40%, transparent 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 1.75rem;
+    pointer-events: none;
+  }
+
+  .gallery-item:hover .gallery-item-overlay {
+    opacity: 1;
+  }
+
+  .gallery-item-title {
+    color: white;
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    line-height: 1.3;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  }
+
+  .gallery-item-category {
+    display: inline-block;
+    background: transparent;
+    color: white;
+    font-size: 0.65rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 0;
+    border-radius: 0;
+    align-self: flex-start;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+  }
+
+  /* ── Empty State ── */
+  .gallery-empty {
+    text-align: center;
+    padding: 5rem 2rem;
+    color: #64748b;
+    grid-column: 1 / -1;
+  }
+
+  .gallery-empty-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+  }
+
+  .gallery-empty h3 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.4rem;
+    font-weight: 800;
+    margin-bottom: 0.5rem;
+    color: #0f172a;
+  }
+
+  .gallery-empty p {
+    font-size: 0.95rem;
+    margin: 0;
+    line-height: 1.6;
+  }
+
+  /* ── Lightbox Modal ── */
+  .lightbox {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(5, 8, 20, 0.95);
+    z-index: 9999;
+    padding: 2rem;
+    animation: lightboxFadeIn 0.25s ease;
+  }
+
+  .lightbox.active {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .lightbox-content {
+    position: relative;
+    max-width: 85vw;
+    max-height: 85vh;
+    animation: lightboxZoomIn 0.3s ease;
+  }
+
+  @keyframes lightboxFadeIn {
+    from { opacity: 0 }
+    to { opacity: 1 }
+  }
+
+  @keyframes lightboxZoomIn {
+    from { transform: scale(0.9); opacity: 0 }
+    to { transform: scale(1); opacity: 1 }
+  }
+
+  .lightbox-image {
+    max-width: 100%;
+    max-height: 80vh;
+    border-radius: var(--gal-radius-md);
+    box-shadow: 0 25px 80px rgba(0, 0, 0, 0.6);
+    display: block;
+  }
+
+  .lightbox-close {
+    position: absolute;
+    top: -50px;
+    right: 0;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 1.25rem;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--gal-transition);
+    line-height: 1;
+  }
+
+  .lightbox-close:hover {
+    background: rgba(255, 255, 255, 0.25);
+    transform: rotate(90deg) scale(1.1);
+  }
+
+  .lightbox-info {
+    display: none;
+  }
+
+  .lightbox-title {
+    display: none;
+  }
+
+  .lightbox-category {
+    display: none;
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 768px) {
+    .gallery-hero {
+      padding: 4rem 1.5rem 3.5rem;
+    }
+
+    .gallery-hero h1 {
+      font-size: 1.8rem;
+    }
+
+    .gallery-hero p {
+      font-size: 0.95rem;
+    }
+
+    .gallery-container {
+      padding: 3rem 1.5rem 4rem;
+    }
+
+    .gallery-filters {
+      gap: 0.5rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .filter-btn {
+      padding: 0.55rem 1.1rem;
+      font-size: 0.8rem;
+    }
+
+    .gallery-grid {
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 1.25rem;
+    }
+
+  .gallery-item-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(15, 23, 42, 0.9) 0%, rgba(15, 23, 42, 0.5) 35%, rgba(15, 23, 42, 0.15) 70%, transparent 100%);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 1.5rem;
+    pointer-events: none;
+  }
+
+  .gallery-item:hover .gallery-item-overlay {
+    opacity: 1;
+  }
+
+  .gallery-item-title {
+    color: white;
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    line-height: 1.35;
+    text-shadow: 0 2px 12px rgba(0, 0, 0, 0.5);
+    letter-spacing: -0.01em;
+  }
+
+  .gallery-item-category {
+    display: inline-block;
+    background: transparent;
+    color: white;
+    font-size: 0.6rem;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 0;
+    border-radius: 0;
+    align-self: flex-start;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+  }
+
+    .lightbox-category {
+      font-size: 0.62rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .gallery-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .gallery-hero h1 {
+      font-size: 1.6rem;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- ═══════════════════════════════════════════
+     HERO SECTION
+═══════════════════════════════════════════ -->
+<section class="gallery-hero">
+  <div class="gallery-hero-content">
+    <span class="gallery-hero-badge">✦ Photo Gallery</span>
+    <h1>Captured<br><em>Moments</em></h1>
+    <p>Browse through our collection of unforgettable self-portrait experiences and creative sessions.</p>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     GALLERY CONTAINER
+═══════════════════════════════════════════ -->
+<div class="gallery-container">
+  <!-- Filter Tabs -->
+  <div class="gallery-filters">
+    <button class="filter-btn active" data-filter="all">All Photos</button>
+    <button class="filter-btn" data-filter="solo">Solo</button>
+    <button class="filter-btn" data-filter="twinning">Twinning</button>
+    <button class="filter-btn" data-filter="group">Group</button>
+    <button class="filter-btn" data-filter="super-party">Super Party</button>
+    <button class="filter-btn" data-filter="academic">Academic</button>
+  </div>
+
+  <!-- Gallery Grid -->
+  <div class="gallery-grid" id="gallery-grid">
+    {% for photo in photos %}
+    <div class="gallery-item" data-category="{{ photo.category }}"
+      onclick="openLightbox('{{ photo.image.url }}', '{{ photo.title|escapejs }}', '{{ photo.get_category_display|escapejs }}')">
+      <img src="{{ photo.image.url }}" alt="{{ photo.title }}" loading="lazy">
+      <div class="gallery-item-overlay">
+        <div class="gallery-item-title">{{ photo.title }}</div>
+        <span class="gallery-item-category">{{ photo.get_category_display }}</span>
+      </div>
+    </div>
+    {% empty %}
+    <div class="gallery-empty" style="grid-column: 1/-1;">
+      <div class="gallery-empty-icon">🖼️</div>
+      <h3>Gallery Coming Soon</h3>
+      <p>We're curating our best moments to showcase here. Check back soon!</p>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     LIGHTBOX MODAL
+═══════════════════════════════════════════ -->
+<div class="lightbox" id="lightbox">
+  <div class="lightbox-content">
+    <button class="lightbox-close" onclick="closeLightbox()" aria-label="Close lightbox">×</button>
+    <img src="" alt="" class="lightbox-image" id="lightbox-image">
+    <div class="lightbox-info">
+      <div class="lightbox-title" id="lightbox-title"></div>
+      <span class="lightbox-category" id="lightbox-category"></span>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Filter functionality
+  const filterBtns = document.querySelectorAll('.filter-btn');
+  const galleryGrid = document.getElementById('gallery-grid');
+
+  filterBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      // Update active state
+      filterBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      const filter = btn.dataset.filter;
+
+      // Filter gallery items
+      const items = document.querySelectorAll('.gallery-item');
+      items.forEach(item => {
+        if (filter === 'all' || item.dataset.category === filter) {
+          item.style.display = 'block';
+        } else {
+          item.style.display = 'none';
+        }
+      });
+    });
+  });
+
+  // Lightbox functionality
+  function openLightbox(imageSrc, title, category) {
+    const lightbox = document.getElementById('lightbox');
+    const lightboxImage = document.getElementById('lightbox-image');
+    const lightboxTitle = document.getElementById('lightbox-title');
+    const lightboxCategory = document.getElementById('lightbox-category');
+
+    lightboxImage.src = imageSrc;
+    lightboxTitle.textContent = title;
+    lightboxCategory.textContent = category;
+    lightbox.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeLightbox() {
+    const lightbox = document.getElementById('lightbox');
+    lightbox.classList.remove('active');
+    document.body.style.overflow = '';
+  }
+
+  // Close lightbox on background click
+  document.getElementById('lightbox').addEventListener('click', function (e) {
+    if (e.target === this) {
+      closeLightbox();
+    }
+  });
+
+  // Close lightbox on Escape key
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') {
+      closeLightbox();
+    }
+  });
+</script>
+{% endblock %}
