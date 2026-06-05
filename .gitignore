@@ -1,4 +1,5 @@
 # Google credentials - never commit this
+# On Railway: add its contents as GOOGLE_CREDENTIALS_JSON environment variable
 google_credentials.json
 
 # Python

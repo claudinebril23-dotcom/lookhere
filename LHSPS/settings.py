@@ -148,4 +148,6 @@ LOGOUT_REDIRECT_URL = '/admin/login/'
 CSRF_TRUSTED_ORIGINS = [
     "https://*.ngrok-free.dev",
     "https://*.pythonanywhere.com",
+    "https://*.railway.app",
+    "https://*.up.railway.app",
 ]
