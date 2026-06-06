@@ -10,9 +10,28 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.AddField(
-            model_name='booking',
-            name='payment_method',
-            field=models.CharField(choices=[('gcash', 'GCash'), ('cash', 'Cash')], default='gcash', max_length=20),
+        migrations.RunSQL(
+            sql="""
+                DO $$
+                BEGIN
+                    IF NOT EXISTS (
+                        SELECT 1 FROM information_schema.columns
+                        WHERE table_name='bookings_booking' AND column_name='payment_method'
+                    ) THEN
+                        ALTER TABLE bookings_booking
+                        ADD COLUMN payment_method VARCHAR(20) DEFAULT 'gcash' NOT NULL;
+                    END IF;
+                END $$;
+            """,
+            reverse_sql="""
+                ALTER TABLE bookings_booking DROP COLUMN IF EXISTS payment_method;
+            """,
+            state_operations=[
+                migrations.AddField(
+                    model_name='booking',
+                    name='payment_method',
+                    field=models.CharField(choices=[('gcash', 'GCash'), ('cash', 'Cash')], default='gcash', max_length=20),
+                ),
+            ]
         ),
     ]
