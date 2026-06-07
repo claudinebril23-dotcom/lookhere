@@ -576,9 +576,20 @@ def booked_times_api(request):
                 all_slots = [9, 10, 11, 12, 13, 14, 15, 16, 17, 18]  # 9 AM – 6 PM
 
                 for event in result.get('items', []):
+                    # Only block slots from events created by this booking system
+                    # Check if the event description contains a reference code pattern
+                    description = event.get('description', '')
+                    summary = event.get('summary', '')
+                    is_our_event = ('Reference:' in description or 
+                                   summary.startswith('📸') or
+                                   'Ref Code:' in description)
+                    
+                    if not is_our_event:
+                        continue  # Skip events not created by this system
+
                     start = event['start'].get('dateTime', '')
                     if not start:
-                        # All-day event — block ALL slots for that day
+                        # All-day event from our system — block ALL slots for that day
                         for h in all_slots:
                             period = 'AM' if h < 12 else 'PM'
                             display_hour = h % 12 or 12
