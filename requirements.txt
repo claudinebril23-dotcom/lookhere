@@ -3,8 +3,9 @@ Django==6.0.3
 asgiref==3.11.1
 sqlparse==0.5.5
 
-# Database
+# Database - PostgreSQL (Railway/Render/Neon) or MySQL (PythonAnywhere)
 psycopg2-binary==2.9.11
+mysqlclient==2.2.0
 
 # Static files
 whitenoise==6.6.0
@@ -14,6 +15,10 @@ python-dotenv==1.2.2
 
 # Image handling
 Pillow==12.1.1
+
+# Cloudinary - permanent media storage
+cloudinary==1.41.0
+django-cloudinary-storage==0.3.0
 
 # Google Calendar integration
 google-api-python-client==2.194.0
@@ -31,15 +36,6 @@ pyasn1_modules==0.4.2
 oauthlib==3.3.1
 requests-oauthlib==2.0.0
 
-# AWS (optional, for media storage)
-boto3==1.42.77
-botocore==1.42.77
-s3transfer==0.16.0
-jmespath==1.1.0
-
-# Django extensions
-django-extensions==4.1
-
 # HTTP
 requests==2.33.1
 certifi==2026.2.25
@@ -54,5 +50,5 @@ cffi==2.0.0
 # Timezone
 tzdata==2026.1
 
-# Railway production server
+# Railway production server (not needed on PythonAnywhere)
 gunicorn==21.2.0
