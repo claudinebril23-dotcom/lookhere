@@ -157,6 +157,9 @@ if CLOUDINARY_CLOUD_NAME and CLOUDINARY_API_KEY and CLOUDINARY_API_SECRET:
         'API_KEY': CLOUDINARY_API_KEY,
         'API_SECRET': CLOUDINARY_API_SECRET,
     }
+    print(f"✅ Cloudinary configured: cloud_name={CLOUDINARY_CLOUD_NAME}")
+else:
+    print(f"⚠️ Cloudinary NOT configured — using local filesystem. CLOUD_NAME={CLOUDINARY_CLOUD_NAME!r}")
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
