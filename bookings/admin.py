@@ -478,44 +478,6 @@ class BookingAdmin(admin.ModelAdmin):
             obj.addons.clear()
 
 
-@admin.register(GalleryPhoto)
-class GalleryPhotoAdmin(admin.ModelAdmin):
-    list_display = ('thumbnail_preview', 'title', 'category', 'is_active', 'order', 'created_at')
-    list_filter = ('category', 'is_active', 'created_at')
-    search_fields = ('title',)
-    list_editable = ('is_active', 'order')
-    ordering = ('order', '-created_at')
-    
-    fieldsets = (
-        ('Photo Information', {
-            'fields': ('title', 'category', 'image')
-        }),
-        ('Display Settings', {
-            'fields': ('is_active', 'order')
-        }),
-    )
-    
-    def thumbnail_preview(self, obj):
-        if obj.image:
-            return format_html(
-                '<img src="{}" style="width: 100px; height: 75px; object-fit: cover; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);" />',
-                obj.image.url
-            )
-        return '-'
-    thumbnail_preview.short_description = 'Preview'
-    
-    def save_model(self, request, obj, form, change):
-        """Set default values for hidden fields"""
-        if not change:  # New object
-            if obj.is_active is None:
-                obj.is_active = True
-            if obj.order is None or obj.order == 0:
-                # Set order to be after the last photo
-                last_order = GalleryPhoto.objects.aggregate(models.Max('order'))['order__max'] or 0
-                obj.order = last_order + 10
-        super().save_model(request, obj, form, change)
-
-
 @admin.register(SiteSettings)
 class SiteSettingsAdmin(admin.ModelAdmin):
     list_display = ('id', 'hero_background_preview', 'about_page_image_preview', 'admin_logo_preview', 'hero_overlay_opacity')
