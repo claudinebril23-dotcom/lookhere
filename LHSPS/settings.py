@@ -157,14 +157,23 @@ if CLOUDINARY_CLOUD_NAME and CLOUDINARY_API_KEY and CLOUDINARY_API_SECRET:
         'CLOUD_NAME': CLOUDINARY_CLOUD_NAME,
         'API_KEY': CLOUDINARY_API_KEY,
         'API_SECRET': CLOUDINARY_API_SECRET,
+        'MAX_FILE_SIZE': 10 * 1024 * 1024,  # 10MB Cloudinary free limit
     }
     STORAGES = {
         'default': {
-            'BACKEND': 'cloudinary_storage.storage.MediaCloudinaryStorage',
+            'BACKEND': 'bookings.storage.CompressedCloudinaryStorage',
         },
         'staticfiles': {
             'BACKEND': 'whitenoise.storage.CompressedStaticFilesStorage',
         },
+    }
+    # Auto-compress images before upload via Cloudinary transformation
+    CLOUDINARY_UPLOAD_OPTIONS = {
+        'quality': 'auto',
+        'fetch_format': 'auto',
+        'transformation': [
+            {'width': 1200, 'height': 1200, 'crop': 'limit', 'quality': 'auto:good'},
+        ]
     }
     print(f"✅ Cloudinary configured: cloud_name={CLOUDINARY_CLOUD_NAME}")
 else:
