@@ -2175,7 +2175,9 @@ footer {
     }
 
     .modal-gallery {
-        height: 250px;
+        height: auto;
+        min-height: 280px;
+        max-height: 60vw;
     }
 
     .modal-details {
@@ -2479,7 +2481,9 @@ footer {
     }
 
     .modal-gallery {
-        height: 200px;
+        height: auto;
+        min-height: 240px;
+        max-height: 70vw;
     }
 
     .modal-details {
