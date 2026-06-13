@@ -8,7 +8,7 @@ import io
 from PIL import Image as PILImage
 
 
-def compress_image(file, max_size_bytes=8 * 1024 * 1024, max_dimension=1920):
+def compress_image(file, max_size_bytes=8 * 1024 * 1024, max_dimension=1200):
     """
     Compress an image file to fit within max_size_bytes.
     Resizes if needed and reduces quality progressively.
@@ -29,13 +29,13 @@ def compress_image(file, max_size_bytes=8 * 1024 * 1024, max_dimension=1920):
         elif img.mode != 'RGB':
             img = img.convert('RGB')
 
-        # Resize if larger than max_dimension
+        # Always resize to max 1200px to keep uploads fast
         width, height = img.size
         if width > max_dimension or height > max_dimension:
             img.thumbnail((max_dimension, max_dimension), PILImage.LANCZOS)
 
         # Try progressive quality reduction until under size limit
-        quality = 85
+        quality = 80
         output = io.BytesIO()
         while quality >= 40:
             output.seek(0)
@@ -72,21 +72,15 @@ try:
             if any(lower_name.endswith(ext) for ext in image_extensions):
                 try:
                     content.seek(0)
-                    file_size = len(content.read())
+                    # Always compress images for faster upload and smaller size
+                    print(f"Compressing image before Cloudinary upload: {name}")
+                    compressed = compress_image(content)
+                    if not lower_name.endswith(('.jpg', '.jpeg')):
+                        name = name.rsplit('.', 1)[0] + '.jpg'
+                    content = compressed
                     content.seek(0)
-
-                    # Only compress if file is larger than 8MB (safe buffer under 10MB limit)
-                    if file_size > 8 * 1024 * 1024:
-                        print(f"Compressing large image: {name} ({file_size / 1024 / 1024:.1f}MB)")
-                        compressed = compress_image(content)
-                        # Change extension to .jpg after compression
-                        if not lower_name.endswith(('.jpg', '.jpeg')):
-                            name = name.rsplit('.', 1)[0] + '.jpg'
-                        content = compressed
-                        print(f"Compressed to: {content.seek(0, 2) / 1024 / 1024:.1f}MB")
-                        content.seek(0)
                 except Exception as e:
-                    print(f"Pre-compression check failed: {e}")
+                    print(f"Pre-compression failed: {e}")
                     try:
                         content.seek(0)
                     except Exception:
