@@ -616,14 +616,15 @@
   .pkg-modal-img-col {
     position: relative;
     background: var(--pkg-bg-light);
-    min-height: 400px;
+    min-height: 300px;
   }
 
   .pkg-modal-img-col img {
     width: 100%;
-    height: 100%;
-    object-fit: cover;
+    height: auto;
+    object-fit: contain;
     display: block;
+    background: #f8f9fa;
   }
 
   .pkg-modal-img-placeholder {
@@ -814,18 +815,20 @@
     }
 
     .pkg-modal-img-col {
-      min-height: 280px;
-      max-height: 280px;
+      min-height: 200px;
+      max-height: none;
     }
 
     .pkg-modal-img-col img {
-      height: 280px;
-      object-fit: cover;
+      height: auto;
+      width: 100%;
+      object-fit: contain;
+      background: #f8f9fa;
     }
 
     .pkg-modal-img-placeholder {
-      min-height: 280px;
-      max-height: 280px;
+      min-height: 200px;
+      max-height: none;
     }
 
     .pkg-modal-detail-col {
