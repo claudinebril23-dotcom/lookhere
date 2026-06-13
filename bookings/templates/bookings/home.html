@@ -837,54 +837,7 @@
   </div>
 </section>
 
-<!-- ═══════════════════════════════════════════
-     GALLERY PREVIEW
-═══════════════════════════════════════════ -->
-{% if gallery_photos %}
-<div class="hp-gallery-wrap">
-  <div class="hp-section-label">From Our Studio</div>
-  <h2 class="hp-section-title">A Peek Inside the Studio</h2>
-  <p class="hp-section-sub">Real sessions, real moments — every shot tells a story.</p>
-
-  <!-- Spotlight: auto-rotates through ALL gallery photos -->
-  <div class="hp-gallery-spotlight" id="hpSpotlight">
-    {% for photo in gallery_photos %}
-    <div class="hp-gallery-spotlight-slide{% if forloop.first %} active{% endif %}" data-index="{{ forloop.counter0 }}">
-      <img src="{{ photo.image.url }}" alt="{{ photo.title }}" loading="{% if forloop.first %}eager{% else %}lazy{% endif %}">
-    </div>
-    {% endfor %}
-    <div class="hp-gallery-spotlight-caption">
-      {% if featured_photo %}
-      <span class="hp-spotlight-badge">✨ Latest Upload</span>
-      {% endif %}
-    </div>
-  </div>
-
-  <!-- Dot indicators -->
-  <div class="hp-gallery-dots" id="hpDots">
-    {% for photo in gallery_photos %}
-    <button class="hp-gallery-dot{% if forloop.first %} active{% endif %}" aria-label="Go to slide {{ forloop.counter }}"></button>
-    {% endfor %}
-  </div>
-
-  <!-- Thumbnail grid: each cell cycles its own image independently -->
-  <div class="hp-gallery-grid" id="hpThumbGrid">
-    {% for photo in gallery_photos|slice:":8" %}
-    <div class="hp-gallery-thumb" data-thumb-index="{{ forloop.counter0 }}">
-      {% for p in gallery_photos %}
-      <div class="hp-gallery-thumb-inner{% if forloop.counter0 == 0 %} active{% endif %}">
-        <img src="{{ p.image.url }}" alt="{{ p.title }}" loading="lazy">
-      </div>
-      {% endfor %}
-    </div>
-    {% endfor %}
-  </div>
-
-  <div class="hp-gallery-cta">
-    <a href="{% url 'gallery' %}" class="hp-btn hp-btn-primary">View Full Gallery →</a>
-  </div>
-</div>
-{% endif %}
+<!-- Gallery section removed -->
 
 <!-- ═══════════════════════════════════════════
      CTA BANNER
