@@ -409,17 +409,26 @@
     /* let children handle their own scroll */
   }
 
+  .admin-sidebar .sidebar-header {
+    flex-shrink: 0;
+  }
+
   .admin-sidebar .sidebar-nav {
-    flex: 1;
+    flex: 1 1 auto;
     overflow-y: auto;
     overflow-x: hidden;
     min-height: 0;
-    /* important: allows flex child to shrink */
+    /* critical: allows flex child to shrink below content size */
+    -webkit-overflow-scrolling: touch;
+    /* smooth scroll on iOS */
   }
 
   .admin-sidebar .sidebar-footer {
     flex-shrink: 0;
+    flex-grow: 0;
     overflow: visible;
+    position: relative;
+    z-index: 1;
   }
 
   .admin-sidebar.mobile-open {
